@@ -14,8 +14,5 @@ response = requests.get("https://hft-service-dev.lykkex.net/api/AssetPairs").jso
 "  Check if API is working
 requests.get("https://hft-service-dev.lykkex.net/api/IsAlive").json()
 
-"  Check if API is working
-response = requests.get("https://hft-service-dev.lykkex.net/api/OrderBooks/BTCUSD")
-
 " Get order book (BTCUSD)
 ob = requests.get("https://hft-service-dev.lykkex.net/api/OrderBooks/BTCUSD").json()
