@@ -15,4 +15,8 @@ response = requests.get("https://hft-service-dev.lykkex.net/api/AssetPairs").jso
 requests.get("https://hft-service-dev.lykkex.net/api/IsAlive").json()
 
 " Get order book (BTCUSD)
-ob = requests.get("https://hft-service-dev.lykkex.net/api/OrderBooks/BTCUSD").json()
+pair = 'BTCUSD'
+ob = requests.get("https://hft-service-dev.lykkex.net/api/OrderBooks/"+pair).json()
+sellprice = ob[0]['Prices'][0]['Price']
+buyprice = ob[1]['Prices'][-1]['Price']
+

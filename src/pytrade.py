@@ -1,21 +1,23 @@
 import logging as log
-
+import requests
+import json
 import numpy as np
 import time
-
 
 class PriceService(object):
     def get_price(self):
         log.info("Retrieve price.")
         time_stamp = time.asctime()
-        price = np.random.uniform(0, 100)
+        pair = 'BTCUSD'
+        ob = requests.get("https://hft-service-dev.lykkex.net/api/OrderBooks/"+pair).json()
+        price = ob[1]['Prices'][-1]['Price']
+        volume = ob[1]['Prices'][-1]['Volume']
         log.info("Timestamp: {}".format(time_stamp))
         log.info("Price: {}".format(price))
-        return time_stamp, price
+        return time_stamp, price, volume
 
     def __init__(self):
         log.info("Initialize price service.")
-
 
 class DBService(object):
     def make_entry(self, time_stamp, price):
@@ -29,14 +31,13 @@ class DBService(object):
     def __init__(self):
         log.info("Initialize database service.")
 
-
 class Trader(object):
     def trade(self, price_list):
         log.info("Trader starts to trade...")
         current_value = self.calculate_value(price_list)
 
         log.info("Make trading decision.")
-        if current_value > self.threshold:
+        if current_value >= self.threshold:
             log.info("Value {} is exceeding threshold {}.".format(current_value, self.threshold))
             log.info("Send buying signal")
             self.buy()
@@ -45,7 +46,7 @@ class Trader(object):
             log.info("Do not send buying signal")
 
     def __init__(self):
-        self.threshold = np.random.uniform(0, 1)
+        self.threshold = 1
         log.info("Initialize trader with threshold {}.".format(self.threshold))
 
     def buy(self):
@@ -53,7 +54,7 @@ class Trader(object):
 
     def calculate_value(self, price_list):
         log.info("Calculate value.")
-        value = np.random.uniform(0, 1)
+        value = price_list[-1]>price_list.mean()
         log.info("Value: {}".format(value))
         return value
 
