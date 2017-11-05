@@ -1,40 +1,8 @@
 import logging as log
 import time
 
-import numpy as np
-import requests
-
-
-class PriceService(object):
-    ASSET_PAIR = 'BTCUSD'
-    REQUEST_ORDER_BOOKS_ADDR = "https://hft-service-dev.lykkex.net/api/OrderBooks/"
-
-    def get_price(self):
-        log.info("Retrieve price.")
-        time_stamp = time.asctime()
-
-        ob = requests.get(PriceService.REQUEST_ORDER_BOOKS_ADDR + PriceService.ASSET_PAIR).json()
-        price = ob[1]['Prices'][-1]['Price']
-        volume = ob[1]['Prices'][-1]['Volume']
-        log.info("Timestamp: {}".format(time_stamp))
-        log.info("Price: {}".format(price))
-        return time_stamp, price, volume
-
-    def __init__(self):
-        pass
-
-
-class DBService(object):
-    def make_entry(self, time_stamp, price):
-        log.info("Write time {} and price {} to database.".format(time_stamp, price))
-        pass
-
-    def get_price_list(self):
-        log.info("Retrieve list of prices from database.")
-        return np.random.uniform(0, 100, 100)
-
-    def __init__(self):
-        log.info("Initialize database service.")
+from services.db_service import DBService
+from services.price_service import PriceService
 
 
 class Trader(object):
@@ -86,7 +54,6 @@ def earn(trader, price_service, db_service):
         except KeyboardInterrupt:
             log.info("Trading interrupted by user. Quitting")
             continue_trading = False
-
 
 
 if __name__ == '__main__':
