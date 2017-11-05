@@ -1,15 +1,19 @@
 import logging as log
-import requests
-import json
-import numpy as np
 import time
 
+import numpy as np
+import requests
+
+
 class PriceService(object):
+    ASSET_PAIR = 'BTCUSD'
+    REQUEST_ORDER_BOOKS_ADDR = "https://hft-service-dev.lykkex.net/api/OrderBooks/"
+
     def get_price(self):
         log.info("Retrieve price.")
         time_stamp = time.asctime()
-        pair = 'BTCUSD'
-        ob = requests.get("https://hft-service-dev.lykkex.net/api/OrderBooks/"+pair).json()
+
+        ob = requests.get(PriceService.REQUEST_ORDER_BOOKS_ADDR + PriceService.ASSET_PAIR).json()
         price = ob[1]['Prices'][-1]['Price']
         volume = ob[1]['Prices'][-1]['Volume']
         log.info("Timestamp: {}".format(time_stamp))
@@ -17,7 +21,8 @@ class PriceService(object):
         return time_stamp, price, volume
 
     def __init__(self):
-        log.info("Initialize price service.")
+        pass
+
 
 class DBService(object):
     def make_entry(self, time_stamp, price):
@@ -30,6 +35,7 @@ class DBService(object):
 
     def __init__(self):
         log.info("Initialize database service.")
+
 
 class Trader(object):
     def trade(self, price_list):
@@ -54,7 +60,7 @@ class Trader(object):
 
     def calculate_value(self, price_list):
         log.info("Calculate value.")
-        value = price_list[-1]>price_list.mean()
+        value = price_list[-1] > price_list.mean()
         log.info("Value: {}".format(value))
         return value
 
@@ -66,10 +72,20 @@ def configure_logging():
 
 
 def earn(trader, price_service, db_service):
-    time_stamp, price = price_service.get_price()
-    db_service.make_entry(time_stamp, price)
-    price_list = db_service.get_price_list()
-    trader.trade(price_list)
+    TRADING_INTERVAL = 5
+    continue_trading = True
+    while continue_trading:
+        try:
+            time_stamp, price, volume = price_service.get_price()
+            db_service.make_entry(time_stamp, price)
+            price_list = db_service.get_price_list()
+            trader.trade(price_list)
+            log.info("Pause for {} seconds".format(TRADING_INTERVAL))
+            time.sleep(TRADING_INTERVAL)
+        except KeyboardInterrupt:
+            log.info("Trading interrupted by user. Quitting")
+            continue_trading = False
+
 
 
 if __name__ == '__main__':
