@@ -6,31 +6,33 @@ from services.price_service import PriceService
 
 
 class Trader(object):
-    def trade(self, price_list):
-        log.info("Trader starts to trade...")
-        current_value = self.calculate_trading_signal(price_list)
+    BUYING_SIGNAL = 1
 
-        log.info("Make trading decision.")
-        if current_value >= self.threshold:
-            log.info("Value {} is exceeding threshold {}.".format(current_value, self.threshold))
-            log.info("Send buying signal")
-            self.buy()
-        else:
-            log.info("Value {} is below threshold {}.".format(current_value, self.threshold))
-            log.info("Do not send buying signal")
-
-    def __init__(self):
-        self.threshold = 1
-        log.info("Initialize trader with threshold {}.".format(self.threshold))
+    def calculate_trading_signal(self, price_list):
+        log.info("Calculate trading signal.")
+        current_price = price_list[-1]
+        price_list_mean = price_list.mean()
+        log.info("Current price: {}, mean price: {}".format(current_price, price_list_mean))
+        trading_signal = Trader.BUYING_SIGNAL if current_price > price_list_mean else 0
+        log.info("Trading signal: {}".format(trading_signal))
+        return trading_signal
 
     def buy(self):
         pass
 
-    def calculate_trading_signal(self, price_list):
-        log.info("Calculate trading signal.")
-        value = 1 if price_list[-1] > price_list.mean() else 0
-        log.info("Value: {}".format(value))
-        return value
+    def trade(self, price_list):
+        log.info("Trader starts to trade...")
+        trading_signal = self.calculate_trading_signal(price_list)
+
+        log.info("Make trading decision.")
+        if trading_signal == Trader.BUYING_SIGNAL:
+            log.info("Send buying signal")
+            self.buy()
+        else:
+            log.info("Do not send buying signal")
+
+    def __init__(self):
+        log.info("Initialize trader... ")
 
 
 def configure_logging():
@@ -40,7 +42,7 @@ def configure_logging():
 
 
 def earn(trader, price_service, db_service):
-    TRADING_INTERVAL = 5
+    TRADING_INTERVAL = 5 #seconds
     continue_trading = True
     while continue_trading:
         try:
@@ -62,7 +64,7 @@ if __name__ == '__main__':
     price_service = PriceService()
     db_service = DBService()
     trader = Trader()
-    log.info("Start earning...")
+    log.info("Start trading...")
     earn(trader, price_service, db_service)
-    log.info("Stop earning...")
+    log.info("Stop trading...")
     log.info("# PYTR8 #")
