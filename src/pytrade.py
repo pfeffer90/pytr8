@@ -40,7 +40,7 @@ class DBService(object):
 class Trader(object):
     def trade(self, price_list):
         log.info("Trader starts to trade...")
-        current_value = self.calculate_value(price_list)
+        current_value = self.calculate_trading_signal(price_list)
 
         log.info("Make trading decision.")
         if current_value >= self.threshold:
@@ -58,9 +58,9 @@ class Trader(object):
     def buy(self):
         pass
 
-    def calculate_value(self, price_list):
-        log.info("Calculate value.")
-        value = price_list[-1] > price_list.mean()
+    def calculate_trading_signal(self, price_list):
+        log.info("Calculate trading signal.")
+        value = 1 if price_list[-1] > price_list.mean() else 0
         log.info("Value: {}".format(value))
         return value
 
@@ -76,6 +76,7 @@ def earn(trader, price_service, db_service):
     continue_trading = True
     while continue_trading:
         try:
+            log.info("")
             time_stamp, price, volume = price_service.get_price()
             db_service.make_entry(time_stamp, price)
             price_list = db_service.get_price_list()
