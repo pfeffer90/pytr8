@@ -24,15 +24,35 @@ Platform:
     - If the trading signal is 1 or -1 and our simple risk management tool allows for further trades, a market order is placed (either buy or sell)
     - The script continuously creates a log-file which contains the signal values, the corresponding actions, and checks if the trades are settled.
   - Risk management: To avoid extreme positions we force the algorithm to check certain risk measures before submitting a trade order. To keep the setup simple, for now we simply restrict ourselves to sending at max. one buy signal. Afterwards, only sell orders are allowed which keeps our exposure to Bitcoin small. 
-* Regelmäßiges abrufen eines Preises von einer (existierenden) API
-  - wie oft?
-    - falls täglich, stündlich, würde sich eine Lösung außerhalb von Python anbieten zum Beispiel *cron tab*
-    - falls kontinuierlich, laufendes Programm
-* Speichern des Preises
-    - wie oft und wie lange?
 
-* Berechnen von irgendeinem kruden Wert als Signal
-    - komplex? Nö
-    - is speed important? Nö
-* If Wert > irgendwas Kaufsignal an API.
-    - was für Berechtigungen brauchen wir da? Der Zugang zu einem Wallet benötigt einen access token, ich habe bereits angefragt. Das Abrufen der Preise etc. geht allerdings ohne jegliche Berechtigung (meines Wissens ist auch kein Limit eingebaut).
+
+# QUESTIONS
+
+## Usage
+* what do we do if the script is interrupted and started again?
+* how many instances of the script can run?
+
+## Calculating the trade signal
+
+* what is the input to a trade signal calculation?
+   - only price list?
+   - does the trader need a guarantee like constant time interval between price retrieval?
+* currently, we compare the whole price history mean with the current price. this is not the momentum strategy, which was suggested in the plan. should this be changed?
+
+## Database
+
+* there seems to be two purposes of a database? on the one hand persisting the retrieved asset prices and on the other hand persisting the calculated trading signals and actions
+
+### Price database
+
+* how much price history does the trader use for the calculation of the trading signal?
+* do we need further fields besides time stamp and price?
+
+### Trading database
+* which form does an entry have?
+  - time_stamp, price, trading_signal, action, is_settled
+
+
+
+## Wallet access token
+* ?
