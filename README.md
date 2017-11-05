@@ -29,6 +29,10 @@ Platform:
 # QUESTIONS
 
 ## Usage
+* what would you like to configure from the outside? e.g.
+  - trading interval
+  - asset pair
+  - database file path
 * what do we do if the script is interrupted and started again?
 * how many instances of the script can run?
 
