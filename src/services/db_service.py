@@ -22,8 +22,8 @@ class DBService(object):
 
     def make_trade_entry(self, time_stamp, price, trading_signal, action):
         insert_trade_entry = """
-        insert into actions (timestamp, price, trading_signal, action)
-        values ('{}' , '{}', '{}', '{}')
+        insert into actions (timestamp, price, trading_signal, action, is_settled)
+        values ('{}' , '{}', '{}', '{}', '0')
         """.format(time_stamp, price, trading_signal, action)
         print insert_trade_entry
         self.conn.execute(insert_trade_entry)

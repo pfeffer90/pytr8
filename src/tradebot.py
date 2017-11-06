@@ -14,35 +14,48 @@ class TradeBot(object):
         log.info("Trading signal: {}".format(trading_signal))
         return trading_signal
 
-    def act(self, price_list):
-        log.info("Tradebot makes trading decision...")
+    def act(self):
+        log.info("Prepare and execute trading actions...")
+
+        price_list = self.db_service.get_price_list()
+        log.debug("Total length of price list: {}".format(len(price_list)))
+
         trading_signal = self.calculate_trading_signal(price_list)
 
         if trading_signal == TradeBot.BUYING_SIGNAL:
-            log.info("Send buying signal")
             self.buy()
         else:
             log.info("Do not send buying signal")
 
     def buy(self):
+
+        log.info("Send buying signal")
+        time_stamp = time.strftime("%Y-%m-%d %H:%M:%S")
+        price = self.db_service.get_price_list()[-1]
+        trading_signal = TradeBot.BUYING_SIGNAL
+        action = 'BUY'
+        self.db_service.make_trade_entry(time_stamp, price, trading_signal, action)
+        log.info("Persist trading action")
+
         pass
 
     def trade(self):
-        TRADING_INTERVAL = 5  # seconds
+        TRADING_INTERVAL = 0.1  # seconds
         continue_trading = True
         while continue_trading:
             try:
                 log.info("")
-                time_stamp, price, volume = self.price_service.get_price()
-                self.db_service.make_price_entry(time_stamp, price)
-                price_list = self.db_service.get_price_list()
-                log.debug("Total length of price list: {}".format(len(price_list)))
-                self.act(price_list)
+                self.inform()
+                self.act()
                 log.info("Pause for {} seconds".format(TRADING_INTERVAL))
                 time.sleep(TRADING_INTERVAL)
             except KeyboardInterrupt:
                 log.info("Trading interrupted by user. Quitting")
                 continue_trading = False
+
+    def inform(self):
+        time_stamp, price, volume = self.price_service.get_price()
+        self.db_service.make_price_entry(time_stamp, price)
 
     def __init__(self, price_service, db_service):
         log.info("Initialize trader... ")

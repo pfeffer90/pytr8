@@ -1,3 +1,10 @@
+# Prerequisites
+
+* the tradebot persists its trading actions in a database and needs a folder named database in the directory where the script is executed
+```
+mkdir database
+```
+
 # HOW TO
 
 Start the program by
@@ -5,6 +12,11 @@ Start the program by
 python src/pytrade.py
 ```
 and stop it by Ctrl-C.
+
+To get a summary of the trading actions, check the content of the database
+```
+sqlite3 database/tradebot.db 'select * from actions'
+```
 
 # PLAN
 
