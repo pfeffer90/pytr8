@@ -48,7 +48,7 @@ def earn(trader, price_service, db_service):
         try:
             log.info("")
             time_stamp, price, volume = price_service.get_price()
-            db_service.make_entry(time_stamp, price)
+            db_service.make_price_entry(time_stamp, price)
             price_list = db_service.get_price_list()
             n = len(price_list)
             log.info("Total length of price list: {}".format(n))            
