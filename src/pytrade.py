@@ -42,7 +42,7 @@ def configure_logging():
 
 
 def earn(trader, price_service, db_service):
-    TRADING_INTERVAL = 5 #seconds
+    TRADING_INTERVAL = 0.01 #seconds
     continue_trading = True
     while continue_trading:
         try:
@@ -50,6 +50,8 @@ def earn(trader, price_service, db_service):
             time_stamp, price, volume = price_service.get_price()
             db_service.make_entry(time_stamp, price)
             price_list = db_service.get_price_list()
+            n = len(price_list)
+            log.info("Total length of price list: {}".format(n))            
             trader.trade(price_list)
             log.info("Pause for {} seconds".format(TRADING_INTERVAL))
             time.sleep(TRADING_INTERVAL)
@@ -57,9 +59,9 @@ def earn(trader, price_service, db_service):
             log.info("Trading interrupted by user. Quitting")
             continue_trading = False
 
-
 if __name__ == '__main__':
     configure_logging()
+    log.getLogger().setLevel(log.INFO)
     log.info("# PYTR8 #")
     price_service = PriceService()
     db_service = DBService()

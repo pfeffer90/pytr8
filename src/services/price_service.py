@@ -5,7 +5,7 @@ import requests
 
 
 class PriceService(object):
-    ASSET_PAIR = 'BTCUSD'
+    ASSET_PAIR = 'AUDUSD'
     REQUEST_ORDER_BOOKS_ADDR = "https://hft-service-dev.lykkex.net/api/OrderBooks/"
 
     def get_price(self):
