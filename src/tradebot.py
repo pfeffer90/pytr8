@@ -14,9 +14,6 @@ class TradeBot(object):
         log.info("Trading signal: {}".format(trading_signal))
         return trading_signal
 
-    def buy(self):
-        pass
-
     def act(self, price_list):
         log.info("Tradebot makes trading decision...")
         trading_signal = self.calculate_trading_signal(price_list)
@@ -27,8 +24,11 @@ class TradeBot(object):
         else:
             log.info("Do not send buying signal")
 
+    def buy(self):
+        pass
+
     def trade(self):
-        TRADING_INTERVAL = 0.01  # seconds
+        TRADING_INTERVAL = 5  # seconds
         continue_trading = True
         while continue_trading:
             try:
@@ -36,8 +36,7 @@ class TradeBot(object):
                 time_stamp, price, volume = self.price_service.get_price()
                 self.db_service.make_price_entry(time_stamp, price)
                 price_list = self.db_service.get_price_list()
-                n = len(price_list)
-                log.info("Total length of price list: {}".format(n))
+                log.debug("Total length of price list: {}".format(len(price_list)))
                 self.act(price_list)
                 log.info("Pause for {} seconds".format(TRADING_INTERVAL))
                 time.sleep(TRADING_INTERVAL)

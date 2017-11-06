@@ -8,12 +8,11 @@ from tradebot import TradeBot
 def configure_logging():
     logging_format = '%(asctime)s %(levelname)s: %(message)s'
     date_format = '%Y-%m-%d %H:%M:%S'
-    log.basicConfig(format=logging_format, datefmt=date_format, level=log.INFO)
+    log.basicConfig(format=logging_format, datefmt=date_format, level=log.DEBUG)
 
 
 if __name__ == '__main__':
     configure_logging()
-    log.getLogger().setLevel(log.INFO)
     log.info("# PYTR8 #")
     price_service = PriceService()
     db_service = DBService()
