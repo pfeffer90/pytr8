@@ -23,7 +23,12 @@ class PriceService(object):
         return order_books[1]['Prices'][-1]['Volume']
 
     def get_asset_price(self, order_books):
-        price = order_books[1]['Prices'][-1]['Price']
+        try:
+            price = order_books[1]['Prices'][-1]['Price']
+        except IndexError as e:
+            log.error("Could not extract price from order books.")
+            log.error("{}".format(order_books))
+            raise RuntimeError(e.message)
         return price
 
     def __init__(self):
