@@ -20,6 +20,7 @@ Platform:
     - Cancel existing orders
   - When active, our Python Script continuously performs the following steps:
     - Get Price data for a specified Asset Pair (*BTCUSD*) in regular (10 seconds?) intervals
+    - **The Lykke API currently does not support fetching BTCUSD data in real time. Instead, we use the pair AUDUSD to test our framework.**
     - Computes trading signals (can be adjusted by the user, for illustrative purposes we implement a version of a momentum strategy: If the    price at time *t* is larger than the mean price during the last *t-h* time periods, the signal is 1, otherwise it is -1/ no change: 0)
     - If the trading signal is 1 or -1 and our simple risk management tool allows for further trades, a market order is placed (either buy or sell)
     - The script continuously creates a log-file which contains the signal values, the corresponding actions, and checks if the trades are settled.
