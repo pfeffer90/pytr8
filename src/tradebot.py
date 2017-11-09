@@ -10,7 +10,8 @@ class TradeBot(object):
         current_price = price_list[-1]
         price_list_mean = price_list.mean()
         log.info("Current price: {}, mean price: {}".format(current_price, price_list_mean))
-        trading_signal = TradeBot.BUYING_SIGNAL if current_price > price_list_mean else 0
+        accuracy = 10**(-4)
+        trading_signal = TradeBot.BUYING_SIGNAL if (current_price - price_list_mean) > accuracy else 0
         log.info("Trading signal: {}".format(trading_signal))
         return trading_signal
 
