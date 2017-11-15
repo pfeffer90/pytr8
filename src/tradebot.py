@@ -37,11 +37,12 @@ class TradeBot(object):
         action = 'BUY'
         self.db_service.make_trade_entry(time_stamp, price, trading_signal, action)
         log.info("Persist trading action")
+        self.trade_service.send_market_order()
 
         pass
 
     def trade(self):
-        TRADING_INTERVAL = 0.1  # seconds
+        TRADING_INTERVAL = 10  # seconds
         continue_trading = True
         while continue_trading:
             try:
@@ -57,8 +58,11 @@ class TradeBot(object):
     def inform(self):
         time_stamp, price, volume = self.price_service.get_price()
         self.db_service.make_price_entry(time_stamp, price)
+        self.trade_service.get_balance()
+        self.trade_service.get_pending_orders()
 
-    def __init__(self, price_service, db_service):
+    def __init__(self, price_service, db_service, trade_service):
         log.info("Initialize trader... ")
         self.price_service = price_service
         self.db_service = db_service
+        self.trade_service = trade_service

@@ -14,14 +14,13 @@ class TradeService(object):
     def get_balance(self):
         log.info("Retrieve current balance.")
         time_stamp = time.asctime()
-        q = Request(WALLET_URL)
-        q.add_header('api-key', API_KEY)
+        q = Request(TradeService.WALLET_URL)
+        q.add_header('api-key', TradeService.API_KEY)
         balance = json.loads(urlopen(q).read().decode())
         log.info("Number of assets: {}".format(len(balance)))
 
         for x in range(0,len(balance)):
-            log.info('Current wealth')
-            log.info(format(balance[x]['AssetId'].encode() +': ' +str(balance[x]['Balance'])))
+            log.info(format('Current wealth ' + balance[x]['AssetId'].encode() +': ' +str(balance[x]['Balance'])))
 
         return time_stamp, balance
 
@@ -29,18 +28,18 @@ class TradeService(object):
         log.info("Get pending orders.")
         time_stamp = time.asctime()
         q = Request('https://hft-service-dev.lykkex.net/api/Orders?status=InOrderBook')
-        q.add_header('api-key', API_KEY)
+        q.add_header('api-key', TradeService.API_KEY)
         pending_orders = json.loads(urlopen(q).read().decode())
         if not pending_orders:
             log.info("No pending orders")
         return time_stamp, pending_orders
 
-
     def send_market_order(self, Asset='AUD', OrderAction='BUY', Volume='0.01'):
         log.info("Send market order - {}".format(Asset))
+        time_stamp = time.asctime()
         url = 'https://hft-service-dev.lykkex.net/api/Orders/market'
-        headers = {'api-key' : API_KEY, 'Content-Type': 'application/json'}
-        data = json.dumps({"AssetPairId": ASSET_PAIR, "Asset": Asset, "OrderAction": OrderAction, "Volume": Volume}).encode("utf8")
+        headers = {'api-key' : TradeService.API_KEY, 'Content-Type': 'application/json'}
+        data = json.dumps({"AssetPairId": TradeService.ASSET_PAIR, "Asset": Asset, "OrderAction": OrderAction, "Volume": Volume}).encode("utf8")
         req = Request(url, data, headers)
         f = urlopen(req)
         response = f.read()
@@ -53,3 +52,4 @@ class TradeService(object):
 
     def __init__(self):
         log.info("Initialize trade service.")
+        
