@@ -1,10 +1,23 @@
+# A simple Python framework for trading algorithms running on [Lykke](www.lykke.com) 
+
+This repository hosts our submission for the [Lykke stream](https://streams.lykke.com/Project/ProjectDetails/python-simple-trading-algorithm-development) which aims at making the [Lykke API](https://hft-service-dev.lykkex.net/swagger/ui/index.html#/) more user (and robot) friendly. Feel free to fork and extend this repository, share your thoughts, and spread the idea of the first blockchain based Exchange. Functionalities of this framework include:
+- Ongoing price flow maintenance for all available asset pairs 
+- Automatic processing of price information to generate trading signals
+- Trading signals are processed by risk management engine before sending out orders
+- Automatic submission of Market (and Limit) orders 
+- Supervision of order status as a risk management functionality
+- The framework ensures that all functionalities are saved in a log-file, providing information for debugging to improve the code in testing environments or to ensure compliance. 
+
+Everything is set up as a minimal example and can easily be extended. 
+
 # Prerequisites
 
-* the tradebot persists its trading actions in a database and needs a folder named database in the directory where the script is executed
+* The tradebot persists its trading actions in a database and needs a folder named database in the directory where the script is executed
 ```
 mkdir database
 ```
-
+* Required input: `ASSET_PAIR`, `FREQUENCY`, `ACCESS_TOKEN`
+* **Warning: Connecting the trading enginge with your wallet may cause real losses - we do not take any responsibility for any errors in the code or unfortunate market movements which may work against you!**
 # HOW TO
 
 Start the program by
@@ -86,3 +99,4 @@ Platform:
 
 ## Wallet access token
 * ?
+
