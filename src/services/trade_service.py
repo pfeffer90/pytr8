@@ -10,7 +10,7 @@ class TradeService(object):
     API_KEY = 'b80a447d-ef2c-4d44-978a-8309be7026de'
     WALLET_URL = 'https://hft-service-dev.lykkex.net/api/Wallets'
     ASSET_PAIR = 'AUDUSD'
-
+    ASSET = 'AUD'
     def get_balance(self):
         log.info("Retrieve current balance.")
         time_stamp = time.asctime()
@@ -34,12 +34,12 @@ class TradeService(object):
             log.info("No pending orders")
         return time_stamp, pending_orders
 
-    def send_market_order(self, Asset='AUD', OrderAction='BUY', Volume='0.01'):
-        log.info("Send market order - {}".format(Asset))
+    def send_market_order(self, OrderAction='BUY', Volume='0.1'):
+        log.info("Send market order - {}".format(TradeService.ASSET))
         time_stamp = time.asctime()
         url = 'https://hft-service-dev.lykkex.net/api/Orders/market'
         headers = {'api-key' : TradeService.API_KEY, 'Content-Type': 'application/json'}
-        data = json.dumps({"AssetPairId": TradeService.ASSET_PAIR, "Asset": Asset, "OrderAction": OrderAction, "Volume": Volume}).encode("utf8")
+        data = json.dumps({"AssetPairId": TradeService.ASSET_PAIR, "Asset": TradeService.ASSET, "OrderAction": OrderAction, "Volume": Volume}).encode("utf8")
         req = Request(url, data, headers)
         f = urlopen(req)
         response = f.read()

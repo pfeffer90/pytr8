@@ -1,6 +1,6 @@
 import logging as log
 import time
-
+import numpy
 
 class TradeBot(object):
     BUYING_SIGNAL = 1
@@ -10,11 +10,12 @@ class TradeBot(object):
         current_price = price_list[-1]
         price_list_mean = price_list.mean()
         log.info("Current price: {}, mean price: {}".format(current_price, price_list_mean))
-        accuracy = 10**(-4)
-        trading_signal = TradeBot.BUYING_SIGNAL if (current_price - price_list_mean) > accuracy else 0
+#        accuracy = 10**(-4)
+#        trading_signal = TradeBot.BUYING_SIGNAL if (current_price - price_list_mean) > accuracy else 0
+        trading_signal = TradeBot.BUYING_SIGNAL if numpy.random.uniform(low=0.0, high=1.0, size=None) > 0.5 else 0        
         log.info("Trading signal: {}".format(trading_signal))
         return trading_signal
-
+ 
     def act(self):
         log.info("Prepare and execute trading actions...")
 
@@ -42,7 +43,7 @@ class TradeBot(object):
         pass
 
     def trade(self):
-        TRADING_INTERVAL = 10  # seconds
+        TRADING_INTERVAL = 1  # seconds
         continue_trading = True
         while continue_trading:
             try:
