@@ -9,7 +9,7 @@ import numpy as np
 class DBService(object):
     TIME_STAMP_FIELD = 'time_stamp'
     PRICE_FIELD = 'price'
-    DB_FILENAME = './database/tradebot.db'
+    DEFAULT_PATH_TO_DB = './database/tradebot.db'
 
     def make_price_entry(self, time_stamp, price):
         log.info("Write time {} and price {} to database.".format(time_stamp, price))
@@ -32,15 +32,21 @@ class DBService(object):
     def close_connection_to_db(self):
         self.conn.close()
 
-    def _connect_to_db(self):
-        absolute_path_to_db = os.path.abspath(DBService.DB_FILENAME)
+    def _connect_to_db(self, path_to_database):
+        absolute_path_to_db = os.path.abspath(path_to_database)
         db_is_new = not os.path.exists(absolute_path_to_db)
+
+        path_to_database_dir, database_filename = os.path.split(absolute_path_to_db)
+        if not os.path.exists(path_to_database_dir):
+            os.makedirs(path_to_database_dir)
+
         conn = sqlite3.connect(absolute_path_to_db)
         if db_is_new:
-            log.info('No database available. Create {}.'.format(absolute_path_to_db))
+            log.info('New database, initialize database schemas.')
             self._make_schemas(conn)
-        else:
-            log.info('Found database at {}.'.format(absolute_path_to_db))
+
+        log.info('Using database at {}.'.format(absolute_path_to_db))
+
         return conn
 
     def _make_schemas(self, conn):
@@ -55,8 +61,8 @@ class DBService(object):
         """
         conn.execute(create_trade_action_schema)
 
-    def __init__(self):
+    def __init__(self, path_to_database= DEFAULT_PATH_TO_DB):
         log.info("Initialize database service.")
         maximum_price_list_length = 10 ** 6
         self.fake_db_for_price_list = collections.deque(maxlen=maximum_price_list_length)
-        self.conn = self._connect_to_db()
+        self.conn = self._connect_to_db(path_to_database)

@@ -12,12 +12,9 @@ Everything is set up as a minimal example and can easily be extended.
 
 # Prerequisites
 
-* The tradebot persists its trading actions in a database and needs a folder named database in the directory where the script is executed
-```
-mkdir database
-```
 * Required input: `ASSET_PAIR`, `FREQUENCY`, `ACCESS_TOKEN`
 * **Warning: Connecting the trading enginge with your wallet may cause real losses - we do not take any responsibility for any errors in the code or unfortunate market movements which may work against you!**
+
 # HOW TO
 
 Start the program by
@@ -28,7 +25,7 @@ and stop it by Ctrl-C.
 
 To get a summary of the trading actions, check the content of the database
 ```
-sqlite3 database/tradebot.db 'select * from actions'
+sqlite3 <path_to_db> 'select * from actions'
 ```
 
 # PLAN
