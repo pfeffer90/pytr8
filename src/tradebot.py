@@ -14,14 +14,20 @@ def momentum_strategy(price_list):
     price_list_mean = price_list.mean()
     log.info("Current price: {}, mean price: {}".format(current_price, price_list_mean))
     accuracy = 10**(-4)
-    trading_signal = TradeBot.BUYING_SIGNAL if (current_price - price_list_mean) > accuracy else 0
+    if (current_price - price_list_mean) > accuracy:
+        trading_signal = TradeBot.BUYING_SIGNAL
+    elif (current_price - price_list_mean) < -accuracy:
+        trading_signal = -TradeBot.BUYING_SIGNAL
+    else:      
+        trading_signal =  0
 
     return trading_signal
 
 
 def random_strategy(_):
     log.info("Using a random strategy.")
-    trading_signal = TradeBot.BUYING_SIGNAL if numpy.random.uniform(low=0.0, high=1.0, size=None) > 0.5 else 0
+    trading_signal = numpy.random.randint(3, size=None)-1
+
     return trading_signal
 
 
@@ -44,6 +50,8 @@ class TradeBot(object):
 
         if trading_signal == TradeBot.BUYING_SIGNAL:
             self.buy()
+        if trading_signal == -TradeBot.BUYING_SIGNAL:
+            self.sell()
         else:
             log.info("Do not send buying signal")
 
@@ -53,7 +61,18 @@ class TradeBot(object):
         price = self.db_service.get_price_list()[-1]
         trading_signal = TradeBot.BUYING_SIGNAL
         action = 'BUY'
-        self.trade_service.send_market_order(self.api_key, self.asset_pair, self.asset)
+        self.trade_service.send_market_order(self.api_key, self.asset_pair, self.asset, action)
+        log.info("Persist trading action")
+        self.db_service.make_trade_entry(time_stamp, price, trading_signal, action, True)
+
+
+    def sell(self):
+        log.info("Send selling signal")
+        time_stamp = time.strftime("%Y-%m-%d %H:%M:%S")
+        price = self.db_service.get_price_list()[-1]
+        trading_signal = TradeBot.BUYING_SIGNAL
+        action = 'SELL'
+        self.trade_service.send_market_order(self.api_key, self.asset_pair, self.asset, action)
         log.info("Persist trading action")
         self.db_service.make_trade_entry(time_stamp, price, trading_signal, action, True)
 
@@ -64,7 +83,9 @@ class TradeBot(object):
             try:
                 log.info("")
                 self.inform()
-                self.act()
+                stop_trading = self.evaluate()
+                if not stop_trading:
+                    self.act()
                 log.info("Pause for {} seconds".format(TRADING_INTERVAL))
                 time.sleep(TRADING_INTERVAL)
             except KeyboardInterrupt:
@@ -74,9 +95,27 @@ class TradeBot(object):
     def inform(self):
         time_stamp, price, volume = self.price_service.get_price(self.asset_pair)
         self.db_service.make_price_entry(time_stamp, price)
-        self.trade_service.get_balance(self.api_key)
-        self.trade_service.get_pending_orders(self.api_key)
+        
+    def evaluate(self):  
+        log.info("Start risk management")
 
+        # Check if funds are sufficient
+        balance = self.trade_service.get_balance(self.api_key)[1] 
+        all_available = 1
+        for x in range(0, len(balance)):
+            if balance[x]['Balance']<100:
+                all_available = 0
+                
+        # Check if orders are pending
+        no_pending_orders = not self.trade_service.get_pending_orders(self.api_key)[1]
+        if all_available and no_pending_orders:
+            stop_trading = 0
+        else:
+            stop_trading = 1
+
+        log.info("Trading stop: {}".format(stop_trading))
+        return stop_trading
+        
     def __init__(self, configuration):
         log.info("Initialize trader... ")
         self.api_key = configuration.get_api_key()

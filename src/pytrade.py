@@ -3,6 +3,7 @@ import json
 import logging as log
 import os
 import sys
+import requests
 
 from services.config_service import ConfigService
 from tradebot import TradeBot
@@ -39,11 +40,17 @@ if __name__ == '__main__':
     log.info("Configuration: {}".format(json.dumps(trading_configuration.config, indent=2)))
     log.info("")
 
-    trade_bot = TradeBot(trading_configuration)
-
-    log.info("Start trading...")
-
-    trade_bot.trade()
-
-    log.info("Stop trading...")
-    log.info("# PYTR8 #")
+    log.info("Check status...")
+    api_running = requests.get("https://hft-service-dev.lykkex.net/api/IsAlive").json()
+    if api_running['IssueIndicators']:
+        log.error('API is not ready - interrupt trading')
+    if not api_running['IssueIndicators']:
+        log.error('API is running')
+        trade_bot = TradeBot(trading_configuration)
+        
+        log.info("Start trading...")
+        
+        trade_bot.trade()
+        
+        log.info("Stop trading...")
+        log.info("# PYTR8 #")

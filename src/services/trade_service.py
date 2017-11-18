@@ -7,6 +7,7 @@ import logging as log
 import time
 
 
+
 class TradeService(object):
     WALLET_URL = 'https://hft-service-dev.lykkex.net/api/Wallets'
 
@@ -54,5 +55,34 @@ class TradeService(object):
         f.close()
         return time_stamp, json.loads(response)['Error']
 
+    @staticmethod
+    def send_limit_order(api_key, asset_pair, asset, price, order_action='BUY', volume='0.1'):
+        log.info("Send market order - {}".format(asset))
+        time_stamp = time.asctime()
+        url = 'https://hft-service-dev.lykkex.net/api/Orders/limit'
+        headers = {'api-key': api_key, 'Content-Type': 'application/json'}
+        data = json.dumps(
+            {"AssetPairId": asset_pair, "Asset": asset, "OrderAction": order_action,
+             "Volume": volume, "Price": price}).encode("utf8")
+        req = Request(url, data, headers)
+        f = urlopen(req)
+        response = f.read()
+        log.info("Limit order placed")
+        f.close()
+        order_id = str(json.loads(response))
+        return time_stamp, order_id
+
+    def control_limit_order(api_key, order_id):
+        log.info("Check status of limit order {}", order_id)
+        time_stamp = time.asctime()
+        url = 'https://hft-service-dev.lykkex.net/api/Orders/'+order_id
+        headers = {'api-key': api_key, 'Content-Type': 'application/json'}
+        req = Request(url, headers=headers)
+        f = urlopen(req)
+        response = f.read()
+        content = json.loads(response)
+        status = content['Status']
+        return time_stamp, status
+        
     def __init__(self):
         log.info("Initialize trade service.")
