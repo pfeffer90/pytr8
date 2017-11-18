@@ -58,7 +58,7 @@ class TradeBot(object):
         self.db_service.make_trade_entry(time_stamp, price, trading_signal, action, True)
 
     def trade(self):
-        TRADING_INTERVAL = 1  # seconds
+        TRADING_INTERVAL = 1./self.trading_frequency  # seconds
         continue_trading = True
         while continue_trading:
             try:
