@@ -20,11 +20,11 @@ class DBService(object):
         log.info("Retrieve list of prices from database.")
         return np.array(self.fake_db_for_price_list)
 
-    def make_trade_entry(self, time_stamp, price, trading_signal, action):
+    def make_trade_entry(self, time_stamp, price, trading_signal, action, is_settled=False):
         insert_trade_entry = """
         insert into actions (timestamp, price, trading_signal, action, is_settled)
-        values ('{}' , '{}', '{}', '{}', '0')
-        """.format(time_stamp, price, trading_signal, action)
+        values ('{}' , '{}', '{}', '{}', '{}')
+        """.format(time_stamp, price, trading_signal, action, 1 if is_settled else 0)
         print insert_trade_entry
         self.conn.execute(insert_trade_entry)
         self.conn.commit()

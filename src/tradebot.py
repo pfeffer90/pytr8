@@ -13,8 +13,14 @@ def momentum_strategy(price_list):
     current_price = price_list[-1]
     price_list_mean = price_list.mean()
     log.info("Current price: {}, mean price: {}".format(current_price, price_list_mean))
-    #        accuracy = 10**(-4)
-    #        trading_signal = TradeBot.BUYING_SIGNAL if (current_price - price_list_mean) > accuracy else 0
+    accuracy = 10**(-4)
+    trading_signal = TradeBot.BUYING_SIGNAL if (current_price - price_list_mean) > accuracy else 0
+
+    return trading_signal
+
+
+def random_strategy(_):
+    log.info("Using a random strategy.")
     trading_signal = TradeBot.BUYING_SIGNAL if numpy.random.uniform(low=0.0, high=1.0, size=None) > 0.5 else 0
     return trading_signal
 
@@ -24,7 +30,7 @@ class TradeBot(object):
 
     def calculate_trading_signal(self, price_list):
         log.info("Calculate trading signal.")
-        trading_signal = momentum_strategy(price_list)
+        trading_signal = random_strategy(price_list)
         log.info("Trading signal: {}".format(trading_signal))
         return trading_signal
 
