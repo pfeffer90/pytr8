@@ -17,11 +17,11 @@ Everything is set up as a minimal example and can easily be extended.
 
 # HOW TO
 
-Start the program by
+Start the trade bot by
 ```
-python src/pytrade.py
+python src/pytrade.py -f <path_to_config_file>
 ```
-and stop it by Ctrl-C.
+and stop it by Ctrl-C. To try out the trade bot, use the provided configuration file [demo_config.json](./demo_config.json). 
 
 To get a summary of the trading actions, check the content of the database
 ```

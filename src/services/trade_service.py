@@ -8,16 +8,14 @@ import time
 
 
 class TradeService(object):
-    API_KEY = 'b80a447d-ef2c-4d44-978a-8309be7026de'
     WALLET_URL = 'https://hft-service-dev.lykkex.net/api/Wallets'
-    ASSET_PAIR = 'AUDUSD'
-    ASSET = 'AUD'
 
-    def get_balance(self):
+    @staticmethod
+    def get_balance(api_key):
         log.info("Retrieve current balance.")
         time_stamp = time.asctime()
         q = Request(TradeService.WALLET_URL)
-        q.add_header('api-key', TradeService.API_KEY)
+        q.add_header('api-key', api_key)
         balance = json.loads(urlopen(q).read().decode())
         log.info("Number of assets: {}".format(len(balance)))
 
@@ -26,31 +24,33 @@ class TradeService(object):
 
         return time_stamp, balance
 
-    def get_pending_orders(self):
+    @staticmethod
+    def get_pending_orders(api_key):
         log.info("Get pending orders.")
         time_stamp = time.asctime()
         q = Request('https://hft-service-dev.lykkex.net/api/Orders?status=InOrderBook')
-        q.add_header('api-key', TradeService.API_KEY)
+        q.add_header('api-key', api_key)
         pending_orders = json.loads(urlopen(q).read().decode())
         if not pending_orders:
             log.info("No pending orders")
         return time_stamp, pending_orders
 
-    def send_market_order(self, OrderAction='BUY', Volume='0.1'):
-        log.info("Send market order - {}".format(TradeService.ASSET))
+    @staticmethod
+    def send_market_order(api_key, asset_pair, asset, order_action='BUY', volume='0.1'):
+        log.info("Send market order - {}".format(asset))
         time_stamp = time.asctime()
         url = 'https://hft-service-dev.lykkex.net/api/Orders/market'
-        headers = {'api-key': TradeService.API_KEY, 'Content-Type': 'application/json'}
+        headers = {'api-key': api_key, 'Content-Type': 'application/json'}
         data = json.dumps(
-            {"AssetPairId": TradeService.ASSET_PAIR, "Asset": TradeService.ASSET, "OrderAction": OrderAction,
-             "Volume": Volume}).encode("utf8")
+            {"AssetPairId": asset_pair, "Asset": asset, "OrderAction": order_action,
+             "Volume": volume}).encode("utf8")
         req = Request(url, data, headers)
         f = urlopen(req)
         response = f.read()
         if not json.loads(response)['Error']:
-            log.info("Trade succesfull at price {}".format(json.loads(response)['Result']))
+            log.info("Trade successful at price {}".format(json.loads(response)['Result']))
         else:
-            log.info("Error: Trade not succesfull")
+            log.info("Error: Trade not successful")
         f.close()
         return time_stamp, json.loads(response)['Error']
 

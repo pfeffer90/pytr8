@@ -6,14 +6,13 @@ import requests
 
 
 class PriceService(object):
-    ASSET_PAIR = 'AUDUSD'
     REQUEST_ORDER_BOOKS_ADDR = "https://hft-service-dev.lykkex.net/api/OrderBooks/"
 
-    def get_price(self):
+    def get_price(self, asset_pair_id):
         log.info("Retrieve current price.")
         time_stamp = time.asctime()
 
-        order_books = requests.get(PriceService.REQUEST_ORDER_BOOKS_ADDR + PriceService.ASSET_PAIR).json()
+        order_books = requests.get(PriceService.REQUEST_ORDER_BOOKS_ADDR + asset_pair_id).json()
         price = self.get_asset_price(order_books)
         volume = self.get_asset_trading_volume(order_books)
         time_ob = self.get_time(order_books)

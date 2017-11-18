@@ -61,7 +61,7 @@ class DBService(object):
         """
         conn.execute(create_trade_action_schema)
 
-    def __init__(self, path_to_database= DEFAULT_PATH_TO_DB):
+    def __init__(self, path_to_database=DEFAULT_PATH_TO_DB):
         log.info("Initialize database service.")
         maximum_price_list_length = 10 ** 6
         self.fake_db_for_price_list = collections.deque(maxlen=maximum_price_list_length)
