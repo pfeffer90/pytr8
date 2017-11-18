@@ -28,7 +28,7 @@ To get a summary of the trading actions, check the content of the database
 sqlite3 <path_to_db> 'select * from actions'
 ```
 
-# PLAN
+# Detailed specification description
 
 We create a trading algorithm in Python based on [the Lykke exchange](https://www.lykke.com/). The framework allows users to fetch current prices, to submit market and limit orders, and to track execution of the trades in a simple fashion. 
 
@@ -41,23 +41,21 @@ Platform:
     - Submit market/ limit orders
     - Cancel existing orders
   - When active, our Python Script continuously performs the following steps:
-    - Get Price data for a specified Asset Pair (*BTCUSD*) in regular (10 seconds?) intervals
-    - **The Lykke API currently does not support fetching BTCUSD data in real time. Instead, we use the pair AUDUSD to test our framework.**
+    - Get Price data for a specified Asset Pair (*AUDUSD*) in regular intervals
     - Computes trading signals (can be adjusted by the user, for illustrative purposes we implement a version of a momentum strategy: If the    price at time *t* is larger than the mean price during the last *t-h* time periods, the signal is 1, otherwise it is -1/ no change: 0)
     - If the trading signal is 1 or -1 and our simple risk management tool allows for further trades, a market order is placed (either buy or sell)
     - The script continuously creates a log-file which contains the signal values, the corresponding actions, and checks if the trades are settled.
   - Risk management: To avoid extreme positions we force the algorithm to check certain risk measures before submitting a trade order. To keep the setup simple, for now we simply restrict ourselves to sending at max. one buy signal. Afterwards, only sell orders are allowed which keeps our exposure to Bitcoin small. 
 
-
-# QUESTIONS
+# Some details (FAQ)
 
 ## Usage
-* Configurations from the outside include:
-  - asset pair (default = *BTCUSD*)
+* Before running the algorithm, configurations from the outside include:
+  - asset pair (default = *AUDUSD*)
   - database file path
-  - trading interval (default = *10 secs*)
-  - time periods *h* to take the mean (default = *6* [1 minute])
-* what do we do if the script is interrupted and started again?
+  - trading interval (default = *0.2 secs*)
+  - time periods *h* to take the mean (default = *300* [1 minute])
+* what happens if the script is interrupted and started again?
     - Errors are associated with the potential to loosing money. Therefore, any error should immediately lead to a full stop of the script. 
     - Reasons to stop the script:
         1. API is not responding
@@ -65,35 +63,24 @@ Platform:
     - Reasons to stop sending trading signals:
         1. Price history is not long enough (say, 2 minutes as default)
         1. Trades are awaiting verification
-* how many instances of the script can run?
-    - The script is connected to one wallet id. To ensure global risk management is working properly, trading signals should be restricted to be send from one instance for each currency pair.
+* How many instances of the script can run?
+    - The script is connected to one wallet id. To ensure global risk management is working properly, trading signals should be restricted to be send from one instance for each currency pair. However, one could think of implementing a global trading tool which runs several instances (for instance based on different assets) simultaneously. 
 
-## Calculating the trade signal
+## Trading signals
 
-* what is the input to a trade signal calculation?
-   - For the sake of brevity we use only price list
-   - does the trader need a guarantee like constant time interval between price retrieval? (what does this mean?) 
-* currently, we compare the whole price history mean with the current price. this is not the momentum strategy, which was suggested in the plan. should this be changed? **Already Changed**
+* What is the input to a trade signal calculation?
+   - The signal can be based on the history of past prices. 
+* How does the default trading strategy look like?
+   - Currently we run a strategy related to momentum. During the trading process, past prices are used to compute moving averages. If the current prices exceeds (falls below) a fixed threshold, a buy (sell) signal is triggered. 
+* What about risk management?
+   - Before the algo starts computing trade signals, the risk management tool has to confirm that trades are allowed. The tool checks a number of things (and can easily be extended): 1. Current balance 2. Latency of the system
 
 ## Database
 
-* there seems to be two purposes of a database? on the one hand persisting the retrieved asset prices and on the other hand persisting the calculated trading signals and actions
-
-### Price database
-
-* how much price history does the trader use for the calculation of the trading signal?
-* do we need further fields besides time stamp and price?
-* Required fields:
-    - Time stamp
-    - Ask price (Best price on the sell level (= lowest price))
-    - Bid price (Best price on the buy level (=highest pice))
-
-### Trading database
-* which form does an entry have?
-  - time_stamp, price, trading_signal, action, is_settled
-
-
+* Which kind of data is stored?
+   - A database is created which allows to extract the retrieved prices (this may be useful for backtesting of future stragies)
+   - The trade log contains all necessary information to ensure the compliance of the algorithm. Time stamps, received trading signals, trading verifications, etc. are stored.
 
 ## Wallet access token
-* ?
+* To connect the trading algorithm with your wallet, you have to provide a wallet token generated by Lykke. *Warning: Connecting this trading algorithm with your real-money account may cause loses which are 100 % your responsibility.
 
