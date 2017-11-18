@@ -49,7 +49,7 @@ class TradeBot(object):
         action = 'BUY'
         self.trade_service.send_market_order(self.api_key, self.asset_pair, self.asset)
         log.info("Persist trading action")
-        self.db_service.make_trade_entry(time_stamp, price, trading_signal, action)
+        self.db_service.make_trade_entry(time_stamp, price, trading_signal, action, True)
 
     def trade(self):
         TRADING_INTERVAL = 1  # seconds
