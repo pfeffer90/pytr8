@@ -5,7 +5,6 @@ import os
 import sys
 
 import lykkex
-import requests
 
 from services.config_service import ConfigService
 from tradebot import TradeBot
@@ -46,13 +45,13 @@ if __name__ == '__main__':
     api_running = lykkex.is_alive()
     if api_running['IssueIndicators']:
         log.error('API is not ready - interrupt trading')
-    if not api_running['IssueIndicators']:
-        log.error('API is running')
+    else:
+        log.info('API is running')
         trade_bot = TradeBot(trading_configuration)
-        
+
         log.info("Start trading...")
-        
+
         trade_bot.trade()
-        
+
         log.info("Stop trading...")
         log.info("# PYTR8 #")
