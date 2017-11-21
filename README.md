@@ -25,6 +25,13 @@ or
 conda install --file requirements.txt 
 ```
 
+Further you need the [lykkex](https://github.com/pfeffer90/lykkex) module, which is a simple wrapper for the Lykkex API for easy use with python. To install it
+```bash
+git clone git@github.com:pfeffer90/lykkex.git
+cd lykkex
+pip install .
+```
+
 ## For using the API
 
 You need an API access token to communicate with the Lykkex API and access your wallet. 

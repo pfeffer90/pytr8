@@ -3,6 +3,8 @@ import json
 import logging as log
 import os
 import sys
+
+import lykkex
 import requests
 
 from services.config_service import ConfigService
@@ -41,7 +43,7 @@ if __name__ == '__main__':
     log.info("")
 
     log.info("Check status...")
-    api_running = requests.get("https://hft-service-dev.lykkex.net/api/IsAlive").json()
+    api_running = lykkex.is_alive()
     if api_running['IssueIndicators']:
         log.error('API is not ready - interrupt trading')
     if not api_running['IssueIndicators']:

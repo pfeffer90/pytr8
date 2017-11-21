@@ -2,6 +2,7 @@ import datetime
 import logging as log
 import time
 
+import lykkex
 import requests
 
 
@@ -12,10 +13,10 @@ class PriceService(object):
         log.info("Retrieve current price.")
         time_stamp = time.asctime()
 
-        order_books = requests.get(PriceService.REQUEST_ORDER_BOOKS_ADDR + asset_pair_id).json()
-        price = self.get_asset_price(order_books)
-        volume = self.get_asset_trading_volume(order_books)
-        time_ob = self.get_time(order_books)
+        order_book = lykkex.get_order_book(asset_pair_id)
+        price = self.get_asset_price(order_book)
+        volume = self.get_asset_trading_volume(order_book)
+        time_ob = self.get_time(order_book)
         time_delta = (datetime.datetime.strptime(time_stamp, '%a %b %d %H:%M:%S %Y') - time_ob).total_seconds()
 
         log.info("Timestamp: {}".format(time_stamp))
