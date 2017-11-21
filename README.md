@@ -24,6 +24,12 @@ or
 ```bash
 conda install --file requirements.txt 
 ```
+
+## For using the API
+
+You need an API access token to communicate with the Lykkex API and access your wallet. 
+
+
 # HOW TO
 
 Start the trade bot by
