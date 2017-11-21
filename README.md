@@ -1,3 +1,5 @@
+**Warning: Connecting the trading enginge with your wallet may cause real losses - we do not take any responsibility for any errors in the code or unfortunate market movements which may work against you!**
+
 # A simple Python framework for trading algorithms running on [Lykke](www.lykke.com) 
 
 This repository hosts our submission for the [Lykke stream](https://streams.lykke.com/Project/ProjectDetails/python-simple-trading-algorithm-development) which aims at making the [Lykke API](https://hft-service-dev.lykkex.net/swagger/ui/index.html#/) more user (and robot) friendly. Feel free to fork and extend this repository, share your thoughts, and spread the idea of the first blockchain based Exchange. Functionalities of this framework include:
@@ -12,9 +14,16 @@ Everything is set up as a minimal example and can easily be extended.
 
 # Prerequisites
 
-* Required input: `ASSET_PAIR`, `FREQUENCY`, `ACCESS_TOKEN`
-* **Warning: Connecting the trading enginge with your wallet may cause real losses - we do not take any responsibility for any errors in the code or unfortunate market movements which may work against you!**
+## For installation
 
+The required python packages are specified in the requirements file. Install them via
+```bash
+pip install -r requirements.txt
+```
+or 
+```bash
+conda install --file requirements.txt 
+```
 # HOW TO
 
 Start the trade bot by
