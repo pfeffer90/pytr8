@@ -4,9 +4,9 @@ import time
 import numpy
 
 from services.db_service import DBService
-from services.price_service import PriceService
-from services.trade_service import TradeService
-
+# from services.price_service import PriceService
+# from services.trade_service import TradeService
+from services.lykkex_service import LykkexService
 
 def momentum_strategy(price_list):
     log.info("Using a momentum strategy.")
@@ -61,7 +61,7 @@ class TradeBot(object):
         price = self.db_service.get_price_list()[-1]
         trading_signal = TradeBot.BUYING_SIGNAL
         action = 'BUY'
-        self.trade_service.send_market_order(self.api_key, self.asset_pair, self.asset, action)
+        self.lykkex_service.send_market_order(self.api_key, self.asset_pair, self.asset, action)
         log.info("Persist trading action")
         self.db_service.make_trade_entry(time_stamp, price, trading_signal, action, True)
 
@@ -72,7 +72,7 @@ class TradeBot(object):
         price = self.db_service.get_price_list()[-1]
         trading_signal = TradeBot.BUYING_SIGNAL
         action = 'SELL'
-        self.trade_service.send_market_order(self.api_key, self.asset_pair, self.asset, action)
+        self.lykkex_service.send_market_order(self.api_key, self.asset_pair, self.asset, action)
         log.info("Persist trading action")
         self.db_service.make_trade_entry(time_stamp, price, trading_signal, action, True)
 
@@ -93,21 +93,23 @@ class TradeBot(object):
                 continue_trading = False
 
     def inform(self):
-        time_stamp, price, volume = self.price_service.get_price(self.asset_pair)
-        self.db_service.make_price_entry(time_stamp, price)
+        time_stamp, price_buy, volume_buy = self.lykkex_service.get_price(self.asset_pair, 'BUY')
+        time_stamp, price_sell, volume_sell = self.lykkex_service.get_price(self.asset_pair, 'BUY')
+
+        self.db_service.make_price_entry(time_stamp, price_buy)
         
     def evaluate(self):  
         log.info("Start risk management")
 
         # Check if funds are sufficient
-        balance = self.trade_service.get_balance(self.api_key)[1] 
+        balance = self.lykkex_service.get_balance(self.api_key)[1] 
         all_available = 1
         for x in range(0, len(balance)):
             if balance[x]['Balance']<0.01:
                 all_available = 0
                 
         # Check if orders are pending
-        no_pending_orders = not self.trade_service.get_pending_orders(self.api_key)[1]
+        no_pending_orders = not self.lykkex_service.get_pending_orders(self.api_key)[1]
         if all_available and no_pending_orders:
             stop_trading = 0
         else:
@@ -123,6 +125,7 @@ class TradeBot(object):
         self.asset_pair = configuration.get_asset_pair()
         self.trading_frequency = configuration.get_trading_frequency()
 
-        self.price_service = PriceService()
-        self.trade_service = TradeService()
+        self.lykkex_service = LykkexService()
+   #     self.price_service = PriceService()
+   #     self.trade_service = TradeService()
         self.db_service = DBService(configuration.get_path_to_database())
