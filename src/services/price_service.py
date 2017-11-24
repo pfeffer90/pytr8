@@ -3,7 +3,6 @@ import logging as log
 import time
 
 import lykkex
-import requests
 
 
 class PriceService(object):

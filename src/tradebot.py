@@ -103,7 +103,7 @@ class TradeBot(object):
         balance = self.trade_service.get_balance(self.api_key)[1] 
         all_available = 1
         for x in range(0, len(balance)):
-            if balance[x]['Balance']<100:
+            if balance[x]['Balance']<0.01:
                 all_available = 0
                 
         # Check if orders are pending
