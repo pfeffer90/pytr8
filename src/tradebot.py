@@ -8,13 +8,14 @@ from services.lykkex_service import LykkexService
 
 def momentum_strategy(price_list):
     log.info("Using a momentum strategy.")
-    current_price = price_list[-1]
-    price_list_mean = price_list.mean()
+
+    current_price = price_list[-1,:]
+    price_list_mean = price_list.mean(axis=0)
     log.info("Current price: {}, mean price: {}".format(current_price, price_list_mean))
     accuracy = 10**(-4)
-    if (current_price - price_list_mean) > accuracy:
+    if (current_price[0] - price_list_mean[0]) > accuracy:
         trading_signal = TradeBot.BUYING_SIGNAL
-    elif (current_price - price_list_mean) < -accuracy:
+    elif (current_price[1] - price_list_mean[1]) < -accuracy:
         trading_signal = -TradeBot.BUYING_SIGNAL
     else:      
         trading_signal =  0
