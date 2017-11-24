@@ -11,9 +11,9 @@ class DBService(object):
     PRICE_FIELD = 'price'
     DEFAULT_PATH_TO_DB = './database/tradebot.db'
 
-    def make_price_entry(self, time_stamp, price):
-        log.info("Write time {} and price {} to database.".format(time_stamp, price))
-        self.fake_db_for_price_list.append(price)
+    def make_price_entry(self, time_stamp, price_buy, price_sell):
+        log.info("Write time {}, buy price {}, and sell price {} to database.".format(time_stamp, price_buy, price_sell))
+        self.fake_db_for_price_list.append([price_buy, price_sell])
         pass
 
     def get_price_list(self):
@@ -21,10 +21,12 @@ class DBService(object):
         return np.array(self.fake_db_for_price_list)
 
     def make_trade_entry(self, time_stamp, price, trading_signal, action, is_settled=False):
+        price_buy = price[0]
+        price_sell = price[1]
         insert_trade_entry = """
-        insert into actions (timestamp, price, trading_signal, action, is_settled)
-        values ('{}' , '{}', '{}', '{}', '{}')
-        """.format(time_stamp, price, trading_signal, action, 1 if is_settled else 0)
+        insert into actions (timestamp, price_buy, price_sell, trading_signal, action, is_settled)
+        values ('{}' , '{}', '{}', '{}', '{}', '{}')
+        """.format(time_stamp, price_buy, price_sell, trading_signal, action, 1 if is_settled else 0)
         print insert_trade_entry
         self.conn.execute(insert_trade_entry)
         self.conn.commit()
@@ -53,7 +55,8 @@ class DBService(object):
         create_trade_action_schema = """
         create table actions (
             timestamp date,
-            price float,
+            price_buy float,
+            price_sell float,
             trading_signal integer,
             action text,
             is_settled bit

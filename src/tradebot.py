@@ -4,8 +4,6 @@ import time
 import numpy
 
 from services.db_service import DBService
-# from services.price_service import PriceService
-# from services.trade_service import TradeService
 from services.lykkex_service import LykkexService
 
 def momentum_strategy(price_list):
@@ -59,6 +57,7 @@ class TradeBot(object):
         log.info("Send buying signal")
         time_stamp = time.strftime("%Y-%m-%d %H:%M:%S")
         price = self.db_service.get_price_list()[-1]
+        log.info("{}".format(price))
         trading_signal = TradeBot.BUYING_SIGNAL
         action = 'BUY'
         self.lykkex_service.send_market_order(self.api_key, self.asset_pair, self.asset, action)
@@ -83,6 +82,7 @@ class TradeBot(object):
             try:
                 log.info("")
                 self.inform()
+
                 stop_trading = self.evaluate()
                 if not stop_trading:
                     self.act()
@@ -93,10 +93,12 @@ class TradeBot(object):
                 continue_trading = False
 
     def inform(self):
+        log.info('Start inform')
         time_stamp, price_buy, volume_buy = self.lykkex_service.get_price(self.asset_pair, 'BUY')
-        time_stamp, price_sell, volume_sell = self.lykkex_service.get_price(self.asset_pair, 'BUY')
+        log.info('Start inform')
+        time_stamp, price_sell, volume_sell = self.lykkex_service.get_price(self.asset_pair, 'SELL')
 
-        self.db_service.make_price_entry(time_stamp, price_buy)
+        self.db_service.make_price_entry(time_stamp, price_buy, price_sell)
         
     def evaluate(self):  
         log.info("Start risk management")
@@ -126,6 +128,4 @@ class TradeBot(object):
         self.trading_frequency = configuration.get_trading_frequency()
 
         self.lykkex_service = LykkexService()
-   #     self.price_service = PriceService()
-   #     self.trade_service = TradeService()
         self.db_service = DBService(configuration.get_path_to_database())

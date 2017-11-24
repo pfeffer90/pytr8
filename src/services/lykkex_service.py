@@ -55,9 +55,8 @@ class LykkexService(object):
 
     @staticmethod
     def get_price(asset_pair_id, side='BUY'):
-        log.info("Retrieve current price.")
+        log.info("Retrieve price: {}".format(side))
         time_stamp = time.asctime()
-        side = 'BUY'
         order_book = lykkex.get_order_book(asset_pair_id)
         price = LykkexService.get_asset_price(order_book, side)
         volume = LykkexService.get_asset_trading_volume(order_book, side)
