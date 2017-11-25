@@ -43,7 +43,10 @@ Start the trade bot by
 ```
 python src/pytrade.py -f <path_to_config_file>
 ```
-and stop it by Ctrl-C. To try out the trade bot, use the provided configuration file [demo_config.json](./demo_config.json). 
+and stop it by Ctrl-C. To try out the trade bot, use the provided configuration file [demo_config.json](./demo_config.json). For more options e.g. logging settings, check out 
+```
+python src/pytrade.py -h 
+``` 
 
 To get a summary of the trading actions, check the content of the database
 ```

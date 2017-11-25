@@ -23,7 +23,7 @@ def get_trading_configuration(config_file_path):
     return ConfigService(path_to_config_file)
 
 
-def configure_logging(logging_level_string):
+def configure_logging(logging_level_string, logging_dir):
     if logging_level_string == "DEBUG":
         logging_level = log.DEBUG
     elif logging_level_string == "INFO":
@@ -31,11 +31,17 @@ def configure_logging(logging_level_string):
     else:
         raise PytradeError("Unknown specified logging level {}.".format(logging_level_string))
 
+    logging_path = os.path.abspath(logging_dir)
+    if not os.path.exists(logging_path):
+        os.makedirs(logging_path)
+    path_to_logging_file = os.path.join(logging_path, 'tradebot.log')
+
     logging_format = '%(asctime)s %(levelname)s: %(message)s'
     date_format = '%Y-%m-%d %H:%M:%S'
     log.basicConfig(format=logging_format, datefmt=date_format, level=logging_level)
     log_file_size_in_mb = 2
-    fh = log_handlers.RotatingFileHandler('tradebot.log', maxBytes=(log_file_size_in_mb * 1024 * 1024), backupCount=7)
+    fh = log_handlers.RotatingFileHandler(path_to_logging_file,
+                                          maxBytes=(log_file_size_in_mb * 1024 * 1024),backupCount=7)
     _logger = log.getLogger()
     _logger.addHandler(fh)
 
@@ -44,6 +50,7 @@ def initialize_parser():
     parser = argparse.ArgumentParser(description='Start the trading bot.')
     parser.add_argument('-f', '--configuration_file_path', required=True)
     parser.add_argument('-l', '--log_level', default="INFO", choices=["DEBUG", "INFO"])
+    parser.add_argument('-d', '--log_directory', default="./log")
 
     return parser
 
@@ -58,7 +65,7 @@ def main(argv):
     if argv is None:
         argv = sys.argv[1:]
     parsed_arguments = parse_args(argv)
-    configure_logging(parsed_arguments.log_level)
+    configure_logging(parsed_arguments.log_level, parsed_arguments.log_directory)
     try:
         trading_configuration = get_trading_configuration(parsed_arguments.configuration_file_path)
         log.info("# PYTR8 #")
