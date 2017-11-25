@@ -4,8 +4,8 @@ import time
 
 import lykkex
 
-class LykkexService(object):
 
+class LykkexService(object):
     @staticmethod
     def get_balance(api_key):
         log.info("Retrieve current balance.")
@@ -72,11 +72,11 @@ class LykkexService(object):
         time_delta = (datetime.datetime.strptime(time_stamp, '%a %b %d %H:%M:%S %Y') - time_ob).total_seconds()
         log.info("System latency: {} secs".format(time_delta))
 
-    @staticmethod        
+    @staticmethod
     def get_asset_trading_volume(order_books, side):
-        if side=='BUY':
+        if side == 'BUY':
             return order_books[1]['Prices'][-1]['Volume']
-        elif side=='SELL':
+        elif side == 'SELL':
             return order_books[0]['Prices'][0]['Volume']
         else:
             return log.error('No valid input')
@@ -89,9 +89,9 @@ class LykkexService(object):
     @staticmethod
     def get_asset_price(order_books, side):
         try:
-            if side=='BUY':
+            if side == 'BUY':
                 price = order_books[1]['Prices'][-1]['Price']
-            elif side=='SELL':
+            elif side == 'SELL':
                 price = order_books[0]['Prices'][0]['Price']
         except IndexError as e:
             log.error("Could not extract price from order books.")
