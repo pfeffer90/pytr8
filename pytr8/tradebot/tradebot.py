@@ -6,20 +6,24 @@ import numpy
 from pytr8.services.db_service import DBService
 from pytr8.services.lykkex_service import LykkexService
 
-def momentum_strategy(price_list):
+
+def momentum_strategy(price_data):
     log.info("Using a momentum strategy.")
-    midquotes = price_list[['buy_price','sell_price']].mean(axis=1)
+
+    if price_data.shape[0] <= 1:
+        raise RuntimeError("Less than two price data points provided. Cannot calculate momentum.")
+
+    midquotes = price_data[['buy_price', 'sell_price']].mean(axis=1)
+    # The shifted difference is undefined for the first value
     momentum = numpy.nanmean(numpy.log(midquotes) - numpy.log(midquotes.shift(1)))
 
-    
     accuracy = 10 ** (-4)
     if numpy.abs(momentum) < accuracy:
         momentum = 0
-        
+
     log.info("Momentum: {}".format(momentum))
     trading_signal = numpy.sign(momentum)
     return trading_signal
-
 
 def random_strategy(_):
     log.info("Using a random strategy.")
@@ -37,7 +41,7 @@ class TradeBot(object):
     BUYING_SIGNAL = 1
     SELLING_SIGNAL = -BUYING_SIGNAL
 
-    def calculate_trading_signal(self,):
+    def calculate_trading_signal(self, ):
         log.info("Calculate trading signal.")
         price_data = self.db_service.get_price_data()
         trading_signal = momentum_strategy(price_data)
