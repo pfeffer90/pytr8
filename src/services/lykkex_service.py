@@ -26,15 +26,16 @@ class LykkexService(object):
         return time_stamp, pending_orders
 
     @staticmethod
-    def send_market_order(api_key, asset_pair, asset, order_action='BUY', volume='0.1'):
+    def send_market_order(api_key, asset_pair, asset, order_action, volume):
         log.info("Send market order - {}".format(asset))
         time_stamp = time.asctime()
         response = lykkex.send_market_order(api_key, asset_pair, asset, order_action, volume)
-        if not response['Error']:
-            log.info("Trade successful at price {}".format(response['Result']))
-        else:
-            log.info("Error: Trade not successful")
-        return time_stamp, response['Error']
+        if response['Error']:
+            log.info("Error: Market order not successful")
+            raise RuntimeError("Error in sending market order. Check response {}".format(response))
+        final_price = response['Result']
+        log.info("Trade successful at price {}".format(final_price))
+        return time_stamp, final_price
 
     @staticmethod
     def send_limit_order(api_key, asset_pair, asset, price, order_action='BUY', volume='0.1'):
