@@ -6,21 +6,18 @@ import numpy
 from services.db_service import DBService
 from services.lykkex_service import LykkexService
 
-
 def momentum_strategy(price_list):
     log.info("Using a momentum strategy.")
+    midquotes = price_list[['buy_price','sell_price']].mean(axis=1)
+    momentum = numpy.nanmean(numpy.log(midquotes) - numpy.log(midquotes.shift(1)))
 
-    current_price = price_list[-1, :]
-    price_list_mean = price_list.mean(axis=0)
-    log.info("Current price: {}, mean price: {}".format(current_price, price_list_mean))
+    
     accuracy = 10 ** (-4)
-    if (current_price[0] - price_list_mean[0]) > accuracy:
-        trading_signal = TradeBot.BUYING_SIGNAL
-    elif (current_price[1] - price_list_mean[1]) < -accuracy:
-        trading_signal = -TradeBot.BUYING_SIGNAL
-    else:
-        trading_signal = 0
-
+    if numpy.abs(momentum) < accuracy:
+        momentum = 0
+        
+    log.info("Momentum: {}".format(momentum))
+    trading_signal = numpy.sign(momentum)
     return trading_signal
 
 
@@ -38,7 +35,7 @@ class TradeBot(object):
     def calculate_trading_signal(self,):
         log.info("Calculate trading signal.")
         price_data = self.db_service.get_price_data()
-        trading_signal = random_strategy(price_data)
+        trading_signal = momentum_strategy(price_data)
         log.info("Trading signal: {}".format(trading_signal))
         return trading_signal
 
