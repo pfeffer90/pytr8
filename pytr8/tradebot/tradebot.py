@@ -27,6 +27,11 @@ def random_strategy(_):
 
     return trading_signal
 
+def no_strategy(_):
+    log.info("No strategy. Just wait and see")
+    trading_signal = 0
+
+    return trading_signal
 
 class TradeBot(object):
     BUYING_SIGNAL = 1
