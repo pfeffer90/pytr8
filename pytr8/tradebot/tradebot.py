@@ -3,8 +3,8 @@ import time
 
 import numpy
 
-from services.db_service import DBService
-from services.lykkex_service import LykkexService
+from pytr8.services.db_service import DBService
+from pytr8.services.lykkex_service import LykkexService
 
 def momentum_strategy(price_list):
     log.info("Using a momentum strategy.")

@@ -2,7 +2,7 @@ import os
 import sqlite3
 from unittest import TestCase
 
-from src.services.db_service import DBService
+from pytr8.services.db_service import DBService
 
 
 class TestDBService(TestCase):
