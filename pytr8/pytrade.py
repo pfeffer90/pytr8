@@ -8,7 +8,7 @@ from logging import handlers as log_handlers
 import lykkex
 
 from services.config_service import ConfigService
-from tradebot import TradeBot
+from tradebot.tradebot import TradeBot
 
 
 class PytradeError(Exception):

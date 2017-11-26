@@ -41,7 +41,7 @@ You need an API access token to communicate with the Lykkex API and access your 
 
 Start the trade bot by
 ```
-python src/pytrade.py -f <path_to_config_file>
+python -m pytr8.pytrade -f <path_to_config_file>
 ```
 and stop it by Ctrl-C. To try out the trade bot, use the provided configuration file [demo_config.json](./demo_config.json). For more options e.g. logging settings, check out 
 ```
