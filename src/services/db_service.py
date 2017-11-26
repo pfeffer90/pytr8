@@ -15,9 +15,13 @@ class DBService(object):
         self.conn.execute(insert_price_pair, (time_stamp, buy_price, sell_price))
         self.conn.commit()
 
-    def get_price_data(self):
+    def get_price_data(self, after=None):
         log.info("Retrieve price data from database.")
-        price_df = pandas.read_sql_query("select * from prices;", self.conn)
+        if after is None:
+            price_data_query = "select * from prices;"
+        else:
+            price_data_query = "select * from prices where timestamp > '{}';".format(after)
+        price_df = pandas.read_sql_query(price_data_query, self.conn)
         return price_df
 
     def make_trade_entry(self, time_stamp, price, trading_signal, action, is_settled=False):
