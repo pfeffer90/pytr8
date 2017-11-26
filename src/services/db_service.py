@@ -24,14 +24,12 @@ class DBService(object):
         price_df = pandas.read_sql_query(price_data_query, self.conn)
         return price_df
 
-    def make_trade_entry(self, time_stamp, price, trading_signal, action, is_settled=False):
-        price_buy = price[0]
-        price_sell = price[1]
+    def make_market_order_entry(self, time_stamp, action, volume, final_price):
+
         insert_trade_entry = """
-        insert into trading_actions (timestamp, price_buy, price_sell, trading_signal, action, is_settled)
-        values ('{}' , '{}', '{}', '{}', '{}', '{}')
-        """.format(time_stamp, price_buy, price_sell, trading_signal, action, 1 if is_settled else 0)
-        self.conn.execute(insert_trade_entry)
+        insert into market_orders (timestamp, action, volume, price) values (?, ?, ?, ?)
+        """
+        self.conn.execute(insert_trade_entry, (time_stamp, action, volume, final_price))
         self.conn.commit()
 
     def get_trade_entries(self):
@@ -69,17 +67,15 @@ class DBService(object):
 
         conn.execute(create_prices_schema)
 
-        create_trade_action_schema = """
-        create table trading_actions (
+        create_market_orders_schema = """
+        create table market_orders (
             timestamp date,
-            price_buy float,
-            price_sell float,
-            trading_signal integer,
             action text,
-            is_settled bit
+            volume float,
+            price float
         );
         """
-        conn.execute(create_trade_action_schema)
+        conn.execute(create_market_orders_schema)
 
         conn.commit()
 

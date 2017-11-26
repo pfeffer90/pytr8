@@ -22,7 +22,7 @@ class TestDBService(TestCase):
         cursor.row_factory = sqlite3.Row
         cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
         table_names = {row['name'] for row in cursor.fetchall()}
-        self.assertIn('trading_actions', table_names)
+        self.assertIn('market_orders', table_names)
 
     def test_initiation_of_the_database_created_a_prices_table(self):
         cursor = self.db_service.conn.cursor()
@@ -83,3 +83,23 @@ class TestDBService(TestCase):
 
         for expected_buy_price, actual_buy_price in zip(buy_prices[1:], actual_price_data["buy_price"]):
             self.assertEqual(expected_buy_price, actual_buy_price)
+
+    def test_db_allows_to_persist_market_orders(self):
+        time_stamp = "2000-01-01 00:00:02.000"
+        action = "BUY"
+        volume = 100
+        final_price = 2.2
+
+        self.db_service.make_market_order_entry(time_stamp, action, volume, final_price)
+
+        cursor = self.db_service.conn.cursor()
+        cursor.row_factory = sqlite3.Row
+        cursor.execute("SELECT * FROM market_orders;")
+        persisted_market_orders = cursor.fetchall()
+
+        self.assertEqual(len(persisted_market_orders), 1)
+
+        actual_market_order = persisted_market_orders[0]
+        expected_market_order = (time_stamp, action, volume, final_price)
+        for actual_entry, expected_entry in zip(actual_market_order, expected_market_order):
+            self.assertEqual(actual_entry, expected_entry)

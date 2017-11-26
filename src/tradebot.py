@@ -52,38 +52,37 @@ class TradeBot(object):
         if trading_signal == TradeBot.SELLING_SIGNAL:
             self.sell()
         else:
-            log.info("Do not send buying signal")
+            log.info("Do not send market orders")
 
     def buy(self):
         log.info("Send buying signal")
-        time_stamp = time.strftime("%Y-%m-%d %H:%M:%S")
-        price_data = self.db_service.get_price_data()
-        last_price_entry = price_data.tail(1)
-        last_buy_price = last_price_entry["buy_price"].iat[0]
-        last_sell_price = last_price_entry["sell_price"].iat[0]
-        price = [last_buy_price, last_sell_price]
-        trading_signal = TradeBot.BUYING_SIGNAL
-        action = 'BUY'
-        self.lykkex_service.send_market_order(self.api_key, self.asset_pair, self.asset, action)
+
+        action = "BUY"
+        volume = 0.1
+
+        timestamp, final_price = self.lykkex_service.send_market_order(self.api_key,
+                                                                       self.asset_pair,
+                                                                       self.asset,
+                                                                       action,
+                                                                       volume)
         log.info("Persist trading action")
-        self.db_service.make_trade_entry(time_stamp, price, trading_signal, action, True)
+        self.db_service.make_market_order_entry(timestamp, action, volume, final_price)
 
     def sell(self):
         log.info("Send selling signal")
-        time_stamp = time.strftime("%Y-%m-%d %H:%M:%S")
-        price_data = self.db_service.get_price_data()
-        last_price_entry = price_data.tail(1)
-        last_buy_price = last_price_entry["buy_price"].iat[0]
-        last_sell_price = last_price_entry["sell_price"].iat[0]
-        price = [last_buy_price, last_sell_price]
-        trading_signal = TradeBot.SELLING_SIGNAL
-        action = 'SELL'
-        self.lykkex_service.send_market_order(self.api_key, self.asset_pair, self.asset, action)
+        action = "SELL"
+        volume = 0.1
+
+        timestamp, final_price = self.lykkex_service.send_market_order(self.api_key,
+                                                                       self.asset_pair,
+                                                                       self.asset,
+                                                                       action,
+                                                                       volume)
         log.info("Persist trading action")
-        self.db_service.make_trade_entry(time_stamp, price, trading_signal, action, True)
+        self.db_service.make_market_order_entry(timestamp, action, volume, final_price)
 
     def trade(self):
-        TRADING_INTERVAL = 1. / self.trading_frequency  # seconds
+        trading_interval = 1. / self.trading_frequency  # seconds
         continue_trading = True
         while continue_trading:
             try:
@@ -93,8 +92,8 @@ class TradeBot(object):
                 stop_trading = self.evaluate()
                 if not stop_trading:
                     self.act()
-                log.info("Pause for {} seconds".format(TRADING_INTERVAL))
-                time.sleep(TRADING_INTERVAL)
+                log.info("Pause for {} seconds".format(trading_interval))
+                time.sleep(trading_interval)
             except KeyboardInterrupt:
                 log.info("Trading interrupted by user. Quitting")
                 continue_trading = False
