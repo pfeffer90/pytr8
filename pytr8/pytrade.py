@@ -61,7 +61,7 @@ def parse_args(argv):
     return parsed_arguments
 
 
-def main(argv):
+def main(argv=None):
     if argv is None:
         argv = sys.argv[1:]
     parsed_arguments = parse_args(argv)
@@ -95,4 +95,4 @@ def main(argv):
 
 
 if __name__ == '__main__':
-    sys.exit(main(None))
+    sys.exit(main())

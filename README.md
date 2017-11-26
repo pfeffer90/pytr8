@@ -16,19 +16,16 @@ Everything is set up as a minimal example and can easily be extended.
 
 ## For installation
 
-The required python packages are specified in the requirements file. Install them via
-```bash
-pip install -r requirements.txt
-```
-or 
-```bash
-conda install --file requirements.txt 
-```
-
-Further you need the [lykkex](https://github.com/pfeffer90/lykkex) module, which is a simple wrapper for the Lykkex API for easy use with python. To install it
+First, you need the [lykkex](https://github.com/pfeffer90/lykkex) module, which is a simple wrapper for the Lykkex API for easy use with python. To install it
 ```bash
 git clone git@github.com:pfeffer90/lykkex.git
 cd lykkex
+pip install .
+```
+
+With this dependency fulfilled, use the provided setup.py to install pytr8
+  
+```bash
 pip install .
 ```
 
@@ -41,11 +38,11 @@ You need an API access token to communicate with the Lykkex API and access your 
 
 Start the trade bot by
 ```
-python -m pytr8.pytrade -f <path_to_config_file>
+pytr8 -f <path_to_config_file>
 ```
 and stop it by Ctrl-C. To try out the trade bot, use the provided configuration file [demo_config.json](./demo_config.json). For more options e.g. logging settings, check out 
 ```
-python src/pytrade.py -h 
+pytr8 -h 
 ``` 
 
 To get a summary of the trading actions, check the content of the database
