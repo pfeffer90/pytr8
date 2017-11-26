@@ -50,7 +50,7 @@ python src/pytrade.py -h
 
 To get a summary of the trading actions, check the content of the database
 ```
-sqlite3 <path_to_db> 'select * from actions'
+sqlite3 <path_to_db> 'select * from trading_actions'
 ```
 
 # Detailed specification description
