@@ -103,3 +103,19 @@ class TestDBService(TestCase):
         expected_market_order = (time_stamp, action, volume, final_price)
         for actual_entry, expected_entry in zip(actual_market_order, expected_market_order):
             self.assertEqual(actual_entry, expected_entry)
+
+    def test_db_allows_to_retrieve_market_orders_data(self):
+        time_stamps = ["2000-01-01 00:00:02.000", "2000-01-01 00:00:04.000", "2000-01-01 00:00:07.000"]
+        actions = ["BUY", "SELL", "SELL"]
+        volume = [100, 70, 30]
+        final_price = [2.2, 2.4, 2.0]
+        entries = zip(time_stamps, actions, volume, final_price)
+
+        for entry in entries:
+            self.db_service.make_market_order_entry(*entry)
+
+        market_order_data = self.db_service.get_market_order_data()
+        self.assertEqual(market_order_data.shape, (3, 4))
+
+        for expected_price, actual_price in zip(final_price, market_order_data["price"]):
+            self.assertEqual(expected_price, actual_price)

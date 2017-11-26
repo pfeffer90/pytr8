@@ -25,12 +25,16 @@ class DBService(object):
         return price_df
 
     def make_market_order_entry(self, time_stamp, action, volume, final_price):
-
-        insert_trade_entry = """
+        insert_market_order = """
         insert into market_orders (timestamp, action, volume, price) values (?, ?, ?, ?)
         """
-        self.conn.execute(insert_trade_entry, (time_stamp, action, volume, final_price))
+        self.conn.execute(insert_market_order, (time_stamp, action, volume, final_price))
         self.conn.commit()
+
+    def get_market_order_data(self):
+        market_order_query = "select * from market_orders"
+        market_order_df = pandas.read_sql_query(market_order_query, self.conn)
+        return market_order_df
 
     def get_trade_entries(self):
         get_trade_entries = 'select * from actions'
@@ -53,8 +57,8 @@ class DBService(object):
             self._make_schemas(conn)
 
         log.info('Using database at {}.'.format(absolute_path_to_db))
-
         return conn
+
 
     def _make_schemas(self, conn):
         create_prices_schema = """
