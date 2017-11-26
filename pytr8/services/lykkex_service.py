@@ -50,7 +50,7 @@ class LykkexService(object):
     def control_limit_order(api_key, order_id):
         log.info("Check status of limit order {}", order_id)
         time_stamp = time.asctime()
-        content = lykkex.control_limit_order(api_key, order_id)
+        content = lykkex.get_order_status(api_key, order_id)
         status = content['Status']
         return time_stamp, status
 
