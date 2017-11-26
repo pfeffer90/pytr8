@@ -52,10 +52,8 @@ sqlite3 <path_to_db> 'select * from trading_actions'
 
 The trading algorithm fetches prices quoted at Lykke and stores them in a database.
 To load price series:
-
     - import `DBService` with the path to the database with which the trade bot was running
     - call `get_price_data` and you will get a [Pandas](https://pandas.pydata.org/) data frame similar to **R** dataframe, which gives you all the data
-
 
 # Detailed specification description
 
