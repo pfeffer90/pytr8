@@ -1,2 +1,6 @@
+# Project specific folders
+database
+log
+
+# Python related
 *.pyc
-.Rhistory
