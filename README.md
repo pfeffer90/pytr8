@@ -16,15 +16,7 @@ Everything is set up as a minimal example and can easily be extended.
 
 ## For installation
 
-First, you need the [lykkex](https://github.com/pfeffer90/lykkex) module, which is a simple wrapper for the Lykkex API for easy use with python. To install it
-```bash
-git clone git@github.com:pfeffer90/lykkex.git
-cd lykkex
-pip install .
-```
-
-With this dependency fulfilled, use the provided setup.py to install pytr8
-  
+The required packages are specified in the setup.py. One which might be interesting is the [lykkex](https://github.com/pfeffer90/lykkex) module, which is a simple wrapper for the Lykkex API for easy use with python and which could be helpful for other projects. To install pytr8
 ```bash
 pip install .
 ```
