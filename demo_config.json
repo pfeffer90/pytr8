@@ -3,5 +3,6 @@
   "ASSET": "AUD",
   "ASSET_PAIR": "AUDUSD",
   "TRADING_FREQUENCY": 0.2,
-  "PATH_TO_DATABASE": "./database/tradebot.db"
+  "PATH_TO_DATABASE": "./database/tradebot.db",
+  "MOMENTUM_ACCUMULATOR": 50
 }

@@ -3,6 +3,7 @@ import json
 
 class ConfigService(object):
     API_KEY = 'API_KEY'
+    MOMENTUM_ACCUMULATOR = 'MOMENTUM_ACCUMULATOR'
     ASSET = 'ASSET'
     ASSET_PAIR = 'ASSET_PAIR'
     TRADING_FREQUENCY = 'TRADING_FREQUENCY'
@@ -10,6 +11,9 @@ class ConfigService(object):
 
     def get_api_key(self):
         return self.config[ConfigService.API_KEY]
+
+    def get_momentum_accumulator(self):
+        return self.config[ConfigService.MOMENTUM_ACCUMULATOR]
 
     def get_asset(self):
         return self.config[ConfigService.ASSET]

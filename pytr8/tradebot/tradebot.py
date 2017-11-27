@@ -44,7 +44,8 @@ class TradeBot(object):
 
     def calculate_trading_signal(self, ):
         log.info("Calculate trading signal.")
-        start_date = datetime.datetime.strptime(time.asctime(), '%a %b %d %H:%M:%S %Y') - datetime.timedelta(seconds=30)
+        window_length = 1. / self.trading_frequency * self.momentum_accumulator
+        start_date = datetime.datetime.strptime(time.asctime(), '%a %b %d %H:%M:%S %Y') - datetime.timedelta(seconds=window_length)
         price_data = self.db_service.get_price_data(after=start_date.strftime("%a %b %d %H:%M:%S %Y"))
         trading_signal = momentum_strategy(price_data)
         log.info("Trading signal: {}".format(trading_signal))
@@ -140,6 +141,7 @@ class TradeBot(object):
         self.asset = configuration.get_asset()
         self.asset_pair = configuration.get_asset_pair()
         self.trading_frequency = configuration.get_trading_frequency()
+        self.momentum_accumulator = configuration.get_momentum_accumulator()
 
         self.lykkex_service = LykkexService()
         self.db_service = DBService(configuration.get_path_to_database())
