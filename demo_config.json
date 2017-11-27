@@ -1,6 +1,7 @@
 {
   "API_KEY": "b80a447d-ef2c-4d44-978a-8309be7026de",
   "ASSET": "AUD",
+  "VOLUME": "0.1",
   "ASSET_PAIR": "AUDUSD",
   "TRADING_FREQUENCY": 0.2,
   "PATH_TO_DATABASE": "./database/tradebot.db",

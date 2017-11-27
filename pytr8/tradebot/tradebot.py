@@ -47,7 +47,7 @@ class TradeBot(object):
         window_length = 1. / self.trading_frequency * self.momentum_accumulator
         start_date = datetime.datetime.strptime(time.asctime(), '%a %b %d %H:%M:%S %Y') - datetime.timedelta(seconds=window_length)
         price_data = self.db_service.get_price_data(after=start_date.strftime("%a %b %d %H:%M:%S %Y"))
-        trading_signal = momentum_strategy(price_data)
+        trading_signal = random_strategy(price_data)
         log.info("Trading signal: {}".format(trading_signal))
         return trading_signal
 
@@ -67,28 +67,26 @@ class TradeBot(object):
         log.info("Send buying signal")
 
         action = "BUY"
-        volume = 0.1
 
         timestamp, final_price = self.lykkex_service.send_market_order(self.api_key,
                                                                        self.asset_pair,
                                                                        self.asset,
                                                                        action,
-                                                                       volume)
+                                                                       self.volume)
         log.info("Persist trading action")
-        self.db_service.make_market_order_entry(timestamp, action, volume, final_price)
+        self.db_service.make_market_order_entry(timestamp, action, self.volume, final_price)
 
     def sell(self):
         log.info("Send selling signal")
         action = "SELL"
-        volume = 0.1
 
         timestamp, final_price = self.lykkex_service.send_market_order(self.api_key,
                                                                        self.asset_pair,
                                                                        self.asset,
                                                                        action,
-                                                                       volume)
+                                                                       self.volume)
         log.info("Persist trading action")
-        self.db_service.make_market_order_entry(timestamp, action, volume, final_price)
+        self.db_service.make_market_order_entry(timestamp, action, self.volume, final_price)
 
     def trade(self):
         trading_interval = 1. / self.trading_frequency  # seconds
@@ -110,7 +108,6 @@ class TradeBot(object):
     def inform(self):
         log.info('Start inform')
         time_stamp, price_buy, volume_buy = self.lykkex_service.get_price(self.asset_pair, 'BUY')
-        log.info('Start inform')
         time_stamp, price_sell, volume_sell = self.lykkex_service.get_price(self.asset_pair, 'SELL')
 
         self.db_service.make_price_entry(time_stamp, price_buy, price_sell)
@@ -122,7 +119,7 @@ class TradeBot(object):
         balance = self.lykkex_service.get_balance(self.api_key)[1]
         all_available = 1
         for x in range(0, len(balance)):
-            if balance[x]['Balance'] < 0.01:
+            if balance[x]['Balance'] < self.volume:
                 all_available = 0
 
         # Check if orders are pending
@@ -131,7 +128,6 @@ class TradeBot(object):
             stop_trading = 0
         else:
             stop_trading = 1
-
         log.info("Trading stop: {}".format(stop_trading))
         return stop_trading
 
@@ -142,6 +138,7 @@ class TradeBot(object):
         self.asset_pair = configuration.get_asset_pair()
         self.trading_frequency = configuration.get_trading_frequency()
         self.momentum_accumulator = configuration.get_momentum_accumulator()
+        self.volume = configuration.get_volume()
 
         self.lykkex_service = LykkexService()
         self.db_service = DBService(configuration.get_path_to_database())
