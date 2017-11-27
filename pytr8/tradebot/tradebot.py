@@ -47,7 +47,7 @@ class TradeBot(object):
         window_length = 1. / self.trading_frequency * self.momentum_accumulator
         start_date = datetime.datetime.strptime(time.asctime(), '%a %b %d %H:%M:%S %Y') - datetime.timedelta(seconds=window_length)
         price_data = self.db_service.get_price_data(after=start_date.strftime("%a %b %d %H:%M:%S %Y"))
-        trading_signal = random_strategy(price_data)
+        trading_signal = no_strategy(price_data)
         log.info("Trading signal: {}".format(trading_signal))
         return trading_signal
 
