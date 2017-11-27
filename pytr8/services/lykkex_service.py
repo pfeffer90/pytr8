@@ -1,15 +1,16 @@
 import datetime
 import logging as log
-import time
 
 import lykkex
+
+from pytr8.services.time_service import get_current_time
 
 
 class LykkexService(object):
     @staticmethod
     def get_balance(api_key):
         log.info("Retrieve current balance.")
-        time_stamp = time.asctime()
+        time_stamp = get_current_time()
         balance = lykkex.get_balance(api_key)
         log.info("Number of assets: {}".format(len(balance)))
         for x in range(0, len(balance)):
@@ -19,7 +20,7 @@ class LykkexService(object):
     @staticmethod
     def get_pending_orders(api_key):
         log.info("Get pending orders.")
-        time_stamp = time.asctime()
+        time_stamp = get_current_time()
         pending_orders = lykkex.get_pending_orders(api_key)
         if not pending_orders:
             log.info("No pending orders")
@@ -28,7 +29,7 @@ class LykkexService(object):
     @staticmethod
     def send_market_order(api_key, asset_pair, asset, order_action, volume):
         log.info("Send market order - {}".format(asset))
-        time_stamp = time.asctime()
+        time_stamp = get_current_time()
         response = lykkex.send_market_order(api_key, asset_pair, asset, order_action, volume)
         if response['Error']:
             log.info("Error: Market order not successful")
@@ -40,7 +41,7 @@ class LykkexService(object):
     @staticmethod
     def send_limit_order(api_key, asset_pair, asset, price, order_action='BUY', volume='0.1'):
         log.info("Send market order - {}".format(asset))
-        time_stamp = time.asctime()
+        time_stamp = get_current_time()
         response = lykkex.send_limit_order(api_key, asset_pair, asset, price, order_action, volume)
         log.info("Limit order placed")
         order_id = str(response)
@@ -49,7 +50,7 @@ class LykkexService(object):
     @staticmethod
     def control_limit_order(api_key, order_id):
         log.info("Check status of limit order {}", order_id)
-        time_stamp = time.asctime()
+        time_stamp = get_current_time()
         content = lykkex.get_order_status(api_key, order_id)
         status = content['Status']
         return time_stamp, status
@@ -57,7 +58,7 @@ class LykkexService(object):
     @staticmethod
     def get_price(asset_pair_id, side='BUY'):
         log.info("Retrieve price: {}".format(side))
-        time_stamp = time.asctime()
+        time_stamp = get_current_time()
         order_book = lykkex.get_order_book(asset_pair_id)
         price = LykkexService.get_asset_price(order_book, side)
         volume = LykkexService.get_asset_trading_volume(order_book, side)
@@ -67,10 +68,10 @@ class LykkexService(object):
         return time_stamp, price, volume
 
     def get_latency(self, asset_pair_id):
-        time_stamp = time.asctime()
+        time_stamp = get_current_time()
         order_book = lykkex.get_order_book(asset_pair_id)
-        time_ob = self.get_time(order_book)
-        time_delta = (datetime.datetime.strptime(time_stamp, '%a %b %d %H:%M:%S %Y') - time_ob).total_seconds()
+        time_ob = self.get_time_stamp_from_order_books(order_book)
+        time_delta = (time_stamp - time_ob).total_seconds()
         log.info("System latency: {} secs".format(time_delta))
 
     @staticmethod
@@ -82,7 +83,8 @@ class LykkexService(object):
         else:
             return log.error('No valid input')
 
-    def get_time(self, order_books):
+    @staticmethod
+    def get_time_stamp_from_order_books(order_books):
         time_stamp_ob = order_books[1]['Timestamp']
         val = datetime.datetime.strptime(time_stamp_ob, '%Y-%m-%dT%H:%M:%S.%f')
         return val

@@ -1,11 +1,12 @@
+import datetime
 import logging as log
 import time
 
 import numpy
-import datetime
 
 from pytr8.services.db_service import DBService
 from pytr8.services.lykkex_service import LykkexService
+from pytr8.services.time_service import get_current_time
 
 
 def momentum_strategy(price_data):
@@ -26,17 +27,20 @@ def momentum_strategy(price_data):
     trading_signal = numpy.sign(momentum)
     return trading_signal
 
+
 def random_strategy(_):
     log.info("Using a random strategy.")
     trading_signal = numpy.random.randint(3, size=None) - 1
 
     return trading_signal
 
+
 def no_strategy(_):
     log.info("No strategy. Just wait and see")
     trading_signal = 0
 
     return trading_signal
+
 
 class TradeBot(object):
     BUYING_SIGNAL = 1
@@ -45,9 +49,15 @@ class TradeBot(object):
     def calculate_trading_signal(self, ):
         log.info("Calculate trading signal.")
         window_length = 1. / self.trading_frequency * self.momentum_accumulator
-        start_date = datetime.datetime.strptime(time.asctime(), '%a %b %d %H:%M:%S %Y') - datetime.timedelta(seconds=window_length)
-        price_data = self.db_service.get_price_data(after=start_date.strftime("%a %b %d %H:%M:%S %Y"))
-        trading_signal = momentum_strategy(price_data)
+        start_date = get_current_time() - datetime.timedelta(seconds=window_length)
+        price_data = self.db_service.get_price_data(after=start_date)
+        enough_price_points_available = price_data.shape[0] >= 2
+        if enough_price_points_available:
+            trading_signal = momentum_strategy(price_data)
+        else:
+            log.info("Need to accumulate more price data points.")
+            trading_signal = 0
+
         log.info("Trading signal: {}".format(trading_signal))
         return trading_signal
 
@@ -119,9 +129,9 @@ class TradeBot(object):
         balance = self.lykkex_service.get_balance(self.api_key)[1]
         all_available = 1
         # for x in range(0, len(balance)):
-            # if balance[x]['Balance'] < float(self.volume):
-                # all_available = 0
-                # log.info('Not enough funds available')
+        # if balance[x]['Balance'] < float(self.volume):
+        # all_available = 0
+        # log.info('Not enough funds available')
 
         # Check if orders are pending
         no_pending_orders = not self.lykkex_service.get_pending_orders(self.api_key)[1]
