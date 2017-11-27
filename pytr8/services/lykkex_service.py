@@ -76,7 +76,7 @@ class LykkexService(object):
     @staticmethod
     def get_asset_trading_volume(order_books, side):
         if side == 'BUY':
-            return order_books[1]['Prices'][-1]['Volume']
+            return order_books[1]['Prices'][0]['Volume']
         elif side == 'SELL':
             return order_books[0]['Prices'][0]['Volume']
         else:

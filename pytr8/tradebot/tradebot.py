@@ -47,7 +47,7 @@ class TradeBot(object):
         window_length = 1. / self.trading_frequency * self.momentum_accumulator
         start_date = datetime.datetime.strptime(time.asctime(), '%a %b %d %H:%M:%S %Y') - datetime.timedelta(seconds=window_length)
         price_data = self.db_service.get_price_data(after=start_date.strftime("%a %b %d %H:%M:%S %Y"))
-        trading_signal = no_strategy(price_data)
+        trading_signal = momentum_strategy(price_data)
         log.info("Trading signal: {}".format(trading_signal))
         return trading_signal
 
@@ -118,12 +118,16 @@ class TradeBot(object):
         # Check if funds are sufficient
         balance = self.lykkex_service.get_balance(self.api_key)[1]
         all_available = 1
-        for x in range(0, len(balance)):
-            if balance[x]['Balance'] < self.volume:
-                all_available = 0
+        # for x in range(0, len(balance)):
+            # if balance[x]['Balance'] < float(self.volume):
+                # all_available = 0
+                # log.info('Not enough funds available')
 
         # Check if orders are pending
         no_pending_orders = not self.lykkex_service.get_pending_orders(self.api_key)[1]
+        if not no_pending_orders:
+            log.info('Pending orders awaiting')
+
         if all_available and no_pending_orders:
             stop_trading = 0
         else:
