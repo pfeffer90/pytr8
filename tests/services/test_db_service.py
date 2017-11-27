@@ -68,11 +68,12 @@ class TestDBService(TestCase):
             self.assertEqual(returned_sell_price, sell_price)
 
     def test_db_service_allows_to_fetch_price_pairs_after_a_given_date(self):
-        time_stamps = ["2000-01-01 00:00:00.000",
+        time_stamps = ["1999-01-01 00:05:00.000",
+                       "2000-01-01 00:00:00.000",
                        "2000-01-01 00:05:00.000",
                        "2000-01-01 00:10:00.000"]
-        buy_prices = [12.5, 12.6, 12.7]
-        sell_prices = [13.0, 12.9, 13.1]
+        buy_prices = [9.0, 12.5, 12.6, 12.7]
+        sell_prices = [10.0, 13.0, 12.9, 13.1]
 
         test_entries = zip(time_stamps, buy_prices, sell_prices)
         for entry in test_entries:
@@ -81,7 +82,7 @@ class TestDBService(TestCase):
         actual_price_data = self.db_service.get_price_data(after="2000-01-01 00:00:02.000")
         self.assertEqual(actual_price_data.shape, (2, 3))
 
-        for expected_buy_price, actual_buy_price in zip(buy_prices[1:], actual_price_data["buy_price"]):
+        for expected_buy_price, actual_buy_price in zip(buy_prices[2:], actual_price_data["buy_price"]):
             self.assertEqual(expected_buy_price, actual_buy_price)
 
     def test_db_allows_to_persist_market_orders(self):
