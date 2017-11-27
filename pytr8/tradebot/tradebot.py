@@ -2,6 +2,7 @@ import logging as log
 import time
 
 import numpy
+import datetime
 
 from pytr8.services.db_service import DBService
 from pytr8.services.lykkex_service import LykkexService
@@ -43,7 +44,8 @@ class TradeBot(object):
 
     def calculate_trading_signal(self, ):
         log.info("Calculate trading signal.")
-        price_data = self.db_service.get_price_data()
+        start_date = datetime.datetime.strptime(time.asctime(), '%a %b %d %H:%M:%S %Y') - datetime.timedelta(seconds=30)
+        price_data = self.db_service.get_price_data(after=start_date.strftime("%a %b %d %H:%M:%S %Y"))
         trading_signal = momentum_strategy(price_data)
         log.info("Trading signal: {}".format(trading_signal))
         return trading_signal
