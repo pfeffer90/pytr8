@@ -2,13 +2,14 @@
 
 # A simple Python framework for trading algorithms running on [Lykke](www.lykke.com) 
 
-This repository hosts our submission for the [Lykke stream](https://streams.lykke.com/Project/ProjectDetails/python-simple-trading-algorithm-development) which aims at making the [Lykke API](https://hft-service-dev.lykkex.net/swagger/ui/index.html#/) more user (and robot) friendly. Feel free to fork and extend this repository, share your thoughts, and spread the idea of the first blockchain based Exchange. Functionalities of this framework include:
+This repository hosts our submission for the [Lykke stream](https://streams.lykke.com/Project/ProjectDetails/python-simple-trading-algorithm-development) which aims at making the [Lykke API](https://hft-service-dev.lykkex.net/swagger/ui/index.html#/) more user (and robot) friendly. Feel free to fork and extend this repository, share your thoughts, and spread the idea of the first blockchain based Exchange. Features of this framework include:
 - Ongoing price flow maintenance for all available asset pairs 
 - Automatic processing of price information to generate trading signals
 - Trading signals are processed by risk management engine before sending out orders
 - Automatic submission of Market (and Limit) orders 
 - Supervision of order status as a risk management functionality
-- The framework ensures that all functionalities are saved in a log-file, providing information for debugging to improve the code in testing environments or to ensure compliance. 
+- Persistence of trading orders in a lightweight database
+- The framework ensures that all trading steps are saved in a log-file, providing information for debugging to improve the code in testing environments or to ensure compliance. 
 
 Everything is set up as a minimal example and can easily be extended. 
 
@@ -36,9 +37,9 @@ and stop it by Ctrl-C. To try out the trade bot, use the provided configuration 
 pytr8 -h 
 ``` 
 
-To get a summary of the trading actions, check the content of the database
+To get a summary of the market orders, check the content of the database
 ```
-sqlite3 <path_to_db> 'select * from trading_actions'
+sqlite3 <path_to_db> 'select * from market_orders'
 ```
 
 The trading algorithm fetches prices quoted at Lykke and stores them in a database.
